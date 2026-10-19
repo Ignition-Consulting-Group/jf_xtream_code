@@ -61,6 +61,14 @@
                             <input is="emby-input" id="xp-stream-base" type="url" data-config="StreamBaseUrl" placeholder="http://192.168.1.10:8096" />
                             <div class="fieldDescription">Jellyfin address written into .strm files. Clients must be able to reach it. Leave empty to use the server's local address.</div>
                         </div>
+                        <div class="checkboxContainer checkboxContainer-withDescription">
+                            <label>
+                                <input is="emby-checkbox" type="checkbox" id="xp-enhanced" />
+                                <span>Enhanced Live TV page</span>
+                            </label>
+                            <div class="fieldDescription">A channel browser with preview, guide and zapping at <a href="/XtreamPro/Web/" target="_blank" rel="noopener">/XtreamPro/Web/</a>. With the File Transformation plugin installed it is also linked from the web client menu. Takes effect after a restart.</div>
+                            <p id="xp-enhanced-status" role="status" aria-live="polite" class="xp-muted"></p>
+                        </div>
                         <div class="inputContainer">
                             <label class="inputLabel" for="xp-series-refresh">Series refresh window (days)</label>
                             <input is="emby-input" id="xp-series-refresh" type="number" min="0" data-config="SeriesRefreshDays" />
@@ -472,6 +480,8 @@
                     config = await ApiClient.getPluginConfiguration(pluginId);
                     page.querySelectorAll('[data-config]').forEach((input) => { input.value = config[input.dataset.config] ?? ''; });
                     $('#xp-title-rules').value = (config.TitleRules || []).join('\n');
+                    $('#xp-enhanced').checked = !!config.EnableEnhancedLiveTv;
+                    api('GET', 'XtreamPro/EnhancedUi').then((s) => { $('#xp-enhanced-status').textContent = s.Message || ''; }).catch(() => {});
                     renderProviders();
                     Dashboard.hideLoadingMsg();
                 });
@@ -483,6 +493,7 @@
                         config[input.dataset.config] = input.type === 'number' ? Number(input.value) : input.value;
                     });
                     config.TitleRules = $('#xp-title-rules').value.split('\n').filter((r) => r.trim());
+                    config.EnableEnhancedLiveTv = $('#xp-enhanced').checked;
                     const result = await ApiClient.updatePluginConfiguration(pluginId, config);
                     Dashboard.processPluginConfigurationUpdateResult(result);
                     renderProviderSelect();
