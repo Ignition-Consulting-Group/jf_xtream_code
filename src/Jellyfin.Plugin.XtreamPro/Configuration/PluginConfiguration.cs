@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using MediaBrowser.Model.Plugins;
 
 namespace Jellyfin.Plugin.XtreamPro.Configuration;
@@ -7,4 +8,6 @@ namespace Jellyfin.Plugin.XtreamPro.Configuration;
 /// </summary>
 public class PluginConfiguration : BasePluginConfiguration
 {
+    /// <summary>Gets the configured provider accounts.</summary>
+    public Collection<ProviderProfile> Providers { get; } = [];
 }
