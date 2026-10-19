@@ -53,15 +53,13 @@ public class VodEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
-    public async Task MovieAndEpisodeStreams_AreServed()
+    public async Task MovieAndEpisodeStreams_AreFinite()
     {
         using var http = _factory.CreateClient();
         var episode = (await _client.GetSeriesInfoAsync(7000, Ct)).Episodes[1][0].Id;
 
-        using (var movie = await http.GetAsync(_client.Urls.Movie(5000, "mkv"), HttpCompletionOption.ResponseHeadersRead, Ct))
-        {
-            movie.StatusCode.ShouldBe(HttpStatusCode.OK);
-        }
+        var movie = await http.GetByteArrayAsync(_client.Urls.Movie(5000, "mkv"), Ct);
+        movie.Length.ShouldBeGreaterThan(0);
 
         using var ep = await http.GetAsync(_client.Urls.Episode(episode, "mkv"), HttpCompletionOption.ResponseHeadersRead, Ct);
         ep.StatusCode.ShouldBe(HttpStatusCode.OK);
