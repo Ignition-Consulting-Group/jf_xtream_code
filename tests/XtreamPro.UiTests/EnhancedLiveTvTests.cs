@@ -82,6 +82,14 @@ public sealed class EnhancedLiveTvTests : IClassFixture<ConfigPageFixture>, IAsy
     }
 
     [Fact]
+    public async Task Categories_KeepTheFullProviderName()
+    {
+        var page = await OpenAsync();
+
+        await Assertions.Expect(page.GetByRole(AriaRole.Navigation, new() { Name = "Categories" }).GetByRole(AriaRole.Button, new() { Name = "UK | News" })).ToBeVisibleAsync();
+    }
+
+    [Fact]
     public async Task ArrowKeys_ZapThroughChannelsAndShowNowNext()
     {
         var page = await OpenAsync();

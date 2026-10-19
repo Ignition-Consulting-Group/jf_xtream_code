@@ -69,8 +69,9 @@
         }
     }
 
+    // Jellyfin stores tags split on "|", so "UK | News" comes back as two tags.
     function group(channel) {
-        return (channel.Tags && channel.Tags[0]) || 'Other';
+        return (channel.Tags || []).join(' | ') || 'Other';
     }
 
     function renderCategories() {
