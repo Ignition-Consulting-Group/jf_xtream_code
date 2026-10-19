@@ -14,6 +14,7 @@ Users install Jellyfin plugins from repository manifests. Versions must follow S
 - The publish job runs in the same workflow when release-please creates a release, because tags pushed with the workflow token do not start other workflows.
 - The zip and `meta.json` come from Jellyfin's own `jprm` tool using `build.yaml`, so the manifest matches what Jellyfin expects (MD5 checksum, targetAbi). A SHA-256 `checksums.sha256` is attached for manual downloads.
 - `manifest.json` lives on the `gh-pages` branch and is served by GitHub Pages.
+- Tags are plain `vX.Y.Z`. PRs are squash-merged with a Conventional Commit title, because release-please only reads commits on `main`.
 
 ## Consequences
 
