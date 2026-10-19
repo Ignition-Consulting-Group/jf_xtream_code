@@ -1,7 +1,7 @@
 ---
 name: "Xtream Pro"
 guid: "d7920906-a306-4216-911b-39474ca7596d"
-version: "0.1.0.0" # x-release-please-version
+version: "1.0.0.0" # x-release-please-version
 targetAbi: "12.2.0.0"
 framework: "net10.0"
 overview: "Xtream Codes IPTV with native Live TV and real VOD and series libraries"
