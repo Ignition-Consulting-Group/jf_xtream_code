@@ -1,5 +1,14 @@
 # Progress
 
+## Phase 4 - Catch-up (done)
+
+- Archive channels become a rolling Catch-up TV library, one show per channel and one episode per finished programme ([ADR 0006](adr/0006-catch-up-as-a-rolling-tv-library.md)).
+- Signed catch-up URLs (start and length are part of the signature) redirect to the provider's timeshift URL in the provider's time zone.
+- Hourly "Sync Xtream catch-up" task; programmes drop out when they leave the archive window.
+- Duplicate guide entries, duplicate movies and duplicate series are now de-duplicated before planning.
+- FakeXtreamServer: timeshift endpoint; on-demand streams are now finite like real ones.
+- Integration tests: catch-up episodes appear in Jellyfin and play through timeshift, and library scans never open provider streams.
+
 ## Phase 3 - VOD and series sync (done)
 
 - Signed stream redirect endpoint so `.strm` files hold no credentials ([ADR 0005](adr/0005-vod-and-series-as-strm-libraries.md)).
