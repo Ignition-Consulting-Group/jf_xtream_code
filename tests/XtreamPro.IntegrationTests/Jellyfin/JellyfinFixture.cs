@@ -26,6 +26,12 @@ public sealed class JellyfinFixture : IAsyncLifetime
         return result.Stdout.Trim();
     }
 
+    public async Task<string> FakeProviderLogAsync()
+    {
+        var (stdout, _) = await _fake!.GetLogsAsync();
+        return stdout;
+    }
+
     public async ValueTask InitializeAsync()
     {
         await _network.CreateAsync();
