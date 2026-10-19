@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - run: dotnet tool restore
+      - run: dotnet format Jellyfin.Plugin.XtreamPro.slnx --verify-no-changes
+      - run: dotnet build Jellyfin.Plugin.XtreamPro.slnx -c Release
+      - run: make coverage
+      - run: dotnet test --project tests/XtreamPro.IntegrationTests -c Release --filter-not-trait "Category=Container"
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: coverage
+          path: TestResults/*.cobertura.*.xml
+          if-no-files-found: ignore

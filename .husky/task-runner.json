@@ -1,0 +1,17 @@
+{
+  "$schema": "https://alirezanet.github.io/Husky.Net/schema.json",
+  "tasks": [
+    {
+      "name": "format",
+      "group": "pre-commit",
+      "command": "dotnet",
+      "args": ["format", "Jellyfin.Plugin.XtreamPro.slnx", "--verify-no-changes"]
+    },
+    {
+      "name": "unit-tests",
+      "group": "pre-commit",
+      "command": "dotnet",
+      "args": ["test", "--project", "tests/XtreamPro.UnitTests"]
+    }
+  ]
+}
