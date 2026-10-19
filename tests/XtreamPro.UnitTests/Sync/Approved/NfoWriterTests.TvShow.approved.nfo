@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tvshow>
+  <title>Fake Show</title>
+  <year>2019</year>
+  <plot>A fake show &amp; more.</plot>
+  <rating>8</rating>
+  <uniqueid type="tmdb" default="true">555</uniqueid>
+  <genre>Comedy</genre>
+  <genre>Drama</genre>
+  <thumb>http://fake.xtream.test/covers/301.jpg</thumb>
+  <fanart>
+    <thumb>http://fake.xtream.test/backdrops/301.jpg</thumb>
+  </fanart>
+</tvshow>

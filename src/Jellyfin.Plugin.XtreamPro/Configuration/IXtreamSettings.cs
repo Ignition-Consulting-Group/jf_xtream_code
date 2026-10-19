@@ -9,4 +9,9 @@ public interface IXtreamSettings
     /// Gets the current configuration.
     /// </summary>
     PluginConfiguration Current { get; }
+
+    /// <summary>
+    /// Persists changes made to <see cref="Current"/>.
+    /// </summary>
+    void Save();
 }

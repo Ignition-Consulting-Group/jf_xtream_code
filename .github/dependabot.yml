@@ -7,6 +7,9 @@ updates:
     groups:
       jellyfin:
         patterns: ["Jellyfin.*"]
+    ignore:
+      # Compiled against the copy the Jellyfin server ships; it moves with Jellyfin, not on its own.
+      - dependency-name: "Polly.Core"
   - package-ecosystem: github-actions
     directory: /
     schedule:

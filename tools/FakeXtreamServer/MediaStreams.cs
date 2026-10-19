@@ -1,6 +1,6 @@
 namespace FakeXtreamServer;
 
-public class LiveStreams
+public class MediaStreams
 {
     private readonly byte[] _loop = File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Media", "loop.ts"));
     private int _active;
@@ -13,7 +13,7 @@ public class LiveStreams
             return;
         }
 
-        if (!int.TryParse(Path.GetFileNameWithoutExtension(file), out var id) || catalogue.Channels.All(c => c.StreamId != id))
+        if (!int.TryParse(Path.GetFileNameWithoutExtension(file), out var id) || (catalogue.Channels.All(c => c.StreamId != id) && !catalogue.IsMedia(id)))
         {
             context.Response.StatusCode = StatusCodes.Status404NotFound;
             return;

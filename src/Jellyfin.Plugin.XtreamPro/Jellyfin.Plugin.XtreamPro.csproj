@@ -7,16 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Jellyfin.Controller">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Jellyfin.Model">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
-    <!-- Shipped by the Jellyfin server; bundling copies would break type identity in the plugin load context. -->
-    <PackageReference Include="Microsoft.Extensions.Http">
-      <ExcludeAssets>runtime</ExcludeAssets>
-    </PackageReference>
+    <!-- Shipped by the Jellyfin server; a bundled copy would break type identity in the plugin load context. -->
     <PackageReference Include="Polly.Core">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>

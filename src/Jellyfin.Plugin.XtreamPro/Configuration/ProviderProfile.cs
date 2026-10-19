@@ -49,4 +49,22 @@ public class ProviderProfile
 
     /// <summary>Gets or sets the channel number overrides.</summary>
     public Collection<ChannelNumberOverride> ChannelNumbers { get; set; } = [];
+
+    /// <summary>Gets or sets a value indicating whether movies are synced to the movies folder.</summary>
+    public bool EnableVod { get; set; } = true;
+
+    /// <summary>Gets or sets a value indicating whether series are synced to the shows folder.</summary>
+    public bool EnableSeries { get; set; } = true;
+
+    /// <summary>Gets or sets a value indicating whether categories that look adult are skipped.</summary>
+    public bool SkipAdultCategories { get; set; } = true;
+
+    /// <summary>Gets or sets a value indicating whether movies are added to a collection per category.</summary>
+    public bool CategoryCollections { get; set; }
+
+    /// <summary>Gets or sets the VOD category rules.</summary>
+    public Collection<CategoryRule> VodCategories { get; set; } = [];
+
+    /// <summary>Gets or sets the series category rules.</summary>
+    public Collection<CategoryRule> SeriesCategories { get; set; } = [];
 }

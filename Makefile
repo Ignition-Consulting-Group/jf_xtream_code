@@ -6,7 +6,7 @@ GATED := Api Sync LiveTv CatchUp
 COVERAGE_ARGS := --coverlet --coverlet-output-format cobertura --coverlet-threshold 80 --coverlet-threshold-stat Total \
 	$(foreach ns,$(GATED),--coverlet-include "[Jellyfin.Plugin.XtreamPro]Jellyfin.Plugin.XtreamPro.$(ns).*")
 
-.PHONY: build test coverage test-int format dev-up dev-down dev-reload release-dry
+.PHONY: build test coverage test-int bench format dev-up dev-down dev-reload release-dry
 
 build:
 	dotnet build $(SLN) -c Release
@@ -19,6 +19,9 @@ coverage:
 
 test-int:
 	dotnet test --project tests/XtreamPro.IntegrationTests
+
+bench:
+	dotnet run -c Release --project benchmarks/XtreamPro.Benchmarks -- --filter '*'
 
 format:
 	dotnet format $(SLN)

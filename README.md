@@ -8,6 +8,15 @@ A Jellyfin plugin for Xtream Codes compatible IPTV providers. Live TV and the gu
 
 Early development. See [docs/PROGRESS.md](docs/PROGRESS.md).
 
+## Setup
+
+1. Install the plugin and open its settings page.
+2. Add a provider with its URL, username and password.
+3. For movies and series, set a movies folder and a shows folder, run the "Sync Xtream movies" and "Sync Xtream series" tasks (Dashboard, Scheduled Tasks), then add each folder as a Movies or Shows library.
+4. Live TV channels and the guide appear on their own after the "Refresh Xtream guide" task runs.
+
+`.strm` files point back at this Jellyfin server, so set "Stream base URL" to an address your clients can reach if the server's local address is not right.
+
 ## Compatibility
 
 | Plugin | Jellyfin |

@@ -1,5 +1,17 @@
 # Progress
 
+## Phase 3 - VOD and series sync (done)
+
+- Signed stream redirect endpoint so `.strm` files hold no credentials ([ADR 0005](adr/0005-vod-and-series-as-strm-libraries.md)).
+- Title cleanup rules (provider prefixes, quality tags, year extraction), Jellyfin-friendly naming with `[tmdbid-N]` tags, approved-file snapshot tests for every `.nfo`.
+- Incremental writer with per-file hashes: adds, updates and removes only what changed; empty catalogues and failed series lookups never delete files.
+- Category filters, adult categories skipped by default, optional collection per category.
+- Series episode lists cached with a configurable refresh window.
+- Scheduled tasks: sync movies (24h), sync series (24h); a library scan is queued when files changed.
+- FakeXtreamServer: movies, series, catalogue size settings, quirk toggles (string numbers, empty arrays, bad dates), movie and episode streams.
+- Integration test: a fresh sync creates movies and shows Jellyfin recognises, playback goes through the signed redirect, and a second sync writes no files.
+- Benchmark (50k movies): unchanged resync 0.8s; first sync is bound by disk writes.
+
 ## Phase 2 - Live TV and EPG (done)
 
 - `XtreamTunerHost` and `XtreamListingsProvider` registered through DI; the guide provider entry is added automatically ([ADR 0004](adr/0004-live-tv-through-tuner-host-and-listings-provider.md)).

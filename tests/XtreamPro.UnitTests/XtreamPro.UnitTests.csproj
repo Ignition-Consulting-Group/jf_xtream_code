@@ -4,10 +4,13 @@
     <PackageReference Include="coverlet.MTP" />
     <PackageReference Include="Jellyfin.Controller" />
     <PackageReference Include="Jellyfin.Model" />
-    <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Polly.Core" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>

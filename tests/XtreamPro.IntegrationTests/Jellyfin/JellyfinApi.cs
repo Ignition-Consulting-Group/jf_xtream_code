@@ -70,6 +70,22 @@ public sealed class JellyfinApi : IDisposable
         (await _http.PostAsync($"/ScheduledTasks/Running/{id}", null, ct)).EnsureSuccessStatusCode();
     }
 
+    public async Task RunTaskToCompletionAsync(string key, CancellationToken ct)
+    {
+        var tasks = (await GetAsync("/ScheduledTasks", ct)).AsArray();
+        var id = tasks.Single(t => t!["Key"]!.GetValue<string>() == key)!["Id"]!.GetValue<string>();
+        var before = (await GetAsync($"/ScheduledTasks/{id}", ct))["LastExecutionResult"]?["EndTimeUtc"]?.GetValue<string>();
+        (await _http.PostAsync($"/ScheduledTasks/Running/{id}", null, ct)).EnsureSuccessStatusCode();
+
+        var done = await EventuallyAsync(
+            () => GetAsync($"/ScheduledTasks/{id}", ct),
+            t => t["State"]!.GetValue<string>() == "Idle" && t["LastExecutionResult"]?["EndTimeUtc"]?.GetValue<string>() != before,
+            ct);
+        done["LastExecutionResult"]!["Status"]!.GetValue<string>().ShouldBe("Completed");
+    }
+
+    public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) => await _http.SendAsync(request, ct);
+
     public static async Task<T> EventuallyAsync<T>(Func<Task<T>> probe, Func<T, bool> done, CancellationToken ct)
     {
         var deadline = DateTime.UtcNow.AddMinutes(2);

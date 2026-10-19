@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<movie>
+  <title>Fake Movie</title>
+  <year>2020</year>
+  <rating>7.4</rating>
+  <uniqueid type="tmdb" default="true">12345</uniqueid>
+  <genre>Drama</genre>
+  <genre>Thriller</genre>
+  <thumb>http://fake.xtream.test/posters/201.jpg</thumb>
+</movie>

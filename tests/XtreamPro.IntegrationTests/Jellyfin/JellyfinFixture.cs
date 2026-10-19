@@ -20,6 +20,12 @@ public sealed class JellyfinFixture : IAsyncLifetime
 
     public Uri BaseAddress => new UriBuilder("http", _jellyfin!.Hostname, _jellyfin.GetMappedPublicPort(8096)).Uri;
 
+    public async Task<string> ExecAsync(params string[] command)
+    {
+        var result = await _jellyfin!.ExecAsync(command);
+        return result.Stdout.Trim();
+    }
+
     public async ValueTask InitializeAsync()
     {
         await _network.CreateAsync();

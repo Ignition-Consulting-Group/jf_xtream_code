@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/XtreamPro.Benchmarks/XtreamPro.Benchmarks.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Jellyfin.Plugin.XtreamPro/Jellyfin.Plugin.XtreamPro.csproj" />
   </Folder>
