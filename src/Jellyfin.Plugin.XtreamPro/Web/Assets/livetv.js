@@ -75,12 +75,15 @@
     }
 
     function renderCategories() {
-        const groups = ['All', 'Favourites', 'Recent', ...new Set(state.channels.map(group))];
+        const term = $('category-search').value.trim().toLowerCase();
+        const groups = ['All', 'Favourites', 'Recent', ...new Set(state.channels.map(group))]
+            .filter((name) => !term || name.toLowerCase().includes(term));
         $('categories').replaceChildren(...groups.map((name) => {
             const button = el('button', { type: 'button', textContent: name });
             button.setAttribute('aria-current', String(name === state.category));
             button.addEventListener('click', () => {
                 state.category = name;
+                $('search').value = '';
                 renderCategories();
                 renderChannels();
             });
@@ -89,7 +92,12 @@
     }
 
     function filtered() {
+        // A channel search covers every channel, whatever category is selected.
         const term = $('search').value.trim().toLowerCase();
+        if (term) {
+            return state.channels.filter((c) => c.Name.toLowerCase().includes(term) || c.ChannelNumber === term);
+        }
+
         let list = state.channels;
         if (state.category === 'Favourites') {
             list = list.filter((c) => c.UserData && c.UserData.IsFavorite);
@@ -100,7 +108,7 @@
             list = list.filter((c) => group(c) === state.category);
         }
 
-        return term ? list.filter((c) => c.Name.toLowerCase().includes(term)) : list;
+        return list;
     }
 
     function logo(channel) {
@@ -299,7 +307,7 @@
     }
 
     document.addEventListener('keydown', (e) => {
-        if (e.target === $('search')) {
+        if (e.target === $('search') || e.target === $('category-search')) {
             return;
         }
 
@@ -319,6 +327,7 @@
         }
     });
     $('search').addEventListener('input', renderChannels);
+    $('category-search').addEventListener('input', renderCategories);
     $('favourite').addEventListener('click', toggleFavourite);
     window.addEventListener('pagehide', stopPreview);
     window.addEventListener('beforeunload', stopPreview);

@@ -82,6 +82,33 @@ public sealed class EnhancedLiveTvTests : IClassFixture<ConfigPageFixture>, IAsy
     }
 
     [Fact]
+    public async Task CategorySearch_NarrowsTheSidebar()
+    {
+        var page = await OpenAsync();
+        var sidebar = page.GetByRole(AriaRole.Navigation, new() { Name = "Categories" });
+
+        await page.GetByLabel("Search categories").FillAsync("spo");
+
+        await Assertions.Expect(sidebar.GetByRole(AriaRole.Button)).ToHaveCountAsync(1);
+        await Assertions.Expect(sidebar.GetByRole(AriaRole.Button)).ToHaveTextAsync("Sports");
+    }
+
+    [Fact]
+    public async Task ChannelSearch_CoversEveryCategoryByNameOrNumber()
+    {
+        var page = await OpenAsync();
+        await page.GetByRole(AriaRole.Navigation, new() { Name = "Categories" }).GetByRole(AriaRole.Button, new() { Name = "Kids" }).ClickAsync();
+
+        await page.GetByLabel("Search all channels").FillAsync("channel 2");
+        await Assertions.Expect(Options(page)).ToHaveCountAsync(1);
+        await Assertions.Expect(Options(page).First).ToContainTextAsync("Fake Channel 2");
+
+        await page.GetByLabel("Search all channels").FillAsync("5");
+        await Assertions.Expect(Options(page)).ToHaveCountAsync(1);
+        await Assertions.Expect(Options(page).First).ToContainTextAsync("Fake Channel 5");
+    }
+
+    [Fact]
     public async Task Categories_KeepTheFullProviderName()
     {
         var page = await OpenAsync();
