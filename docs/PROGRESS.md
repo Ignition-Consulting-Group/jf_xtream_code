@@ -1,5 +1,16 @@
 # Progress
 
+## Phase 2 - Live TV and EPG (done)
+
+- `XtreamTunerHost` and `XtreamListingsProvider` registered through DI; the guide provider entry is added automatically ([ADR 0004](adr/0004-live-tv-through-tuner-host-and-listings-provider.md)).
+- Channel mapping: order by category then provider number, user number overrides, category exclude and rename, logos with XMLTV icon fallback, category as channel group and tag.
+- Streaming XMLTV reader (gzip sniffing, missing timezones, short time formats, missing stop times), timezone offset setting, `get_short_epg` fill for channels without data.
+- Output format (TS or HLS) and direct play preference per provider.
+- Connection limits enforced when opening a channel.
+- Scheduled tasks: refresh guide (12h), refresh channels (6h), account check (6h).
+- FakeXtreamServer: live categories, channels, XMLTV, short EPG, a looping TS stream and a max connections limit.
+- Integration test: channels and guide appear in Jellyfin 12.2 and a channel opens a stream from FakeXtreamServer.
+
 ## Phase 1 - Xtream client (done)
 
 - URL builder for `player_api.php`, `xmltv.php`, live, movie, episode and timeshift URLs.

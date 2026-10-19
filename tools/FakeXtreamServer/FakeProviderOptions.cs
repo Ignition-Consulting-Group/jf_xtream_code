@@ -9,4 +9,8 @@ public class FakeProviderOptions
     public int MaxConnections { get; set; } = 1;
 
     public string Host { get; set; } = "fake.xtream.test";
+
+    public int LiveChannels { get; set; } = 6;
+
+    public bool StringNumbers { get; set; } = true;
 }

@@ -1,0 +1,6 @@
+**/bin/
+**/obj/
+.git/
+artifacts/
+docker/data/
+TestResults/
