@@ -7,6 +7,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/XtreamPro.IntegrationTests/XtreamPro.IntegrationTests.csproj" />
+    <Project Path="tests/XtreamPro.UiTests/XtreamPro.UiTests.csproj" />
     <Project Path="tests/XtreamPro.UnitTests/XtreamPro.UnitTests.csproj" />
   </Folder>
   <Folder Name="/tools/">

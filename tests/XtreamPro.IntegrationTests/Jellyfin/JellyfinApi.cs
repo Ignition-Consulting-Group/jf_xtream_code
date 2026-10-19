@@ -26,6 +26,8 @@ public sealed class JellyfinApi : IDisposable
 
     public string UserId { get; private set; } = string.Empty;
 
+    public string AccessToken { get; private set; } = string.Empty;
+
     public async Task SetUpAsync(CancellationToken ct)
     {
         if (!(await GetAsync("/System/Info/Public", ct))["StartupWizardCompleted"]!.GetValue<bool>())
@@ -35,8 +37,9 @@ public sealed class JellyfinApi : IDisposable
 
         var auth = await PostAsync("/Users/AuthenticateByName", new { Username = "admin", Pw = "admin" }, ct);
         UserId = auth["User"]!["Id"]!.GetValue<string>();
+        AccessToken = auth["AccessToken"]!.GetValue<string>();
         _http.DefaultRequestHeaders.Remove("Authorization");
-        _http.DefaultRequestHeaders.Add("Authorization", $"{ClientHeader}, Token=\"{auth["AccessToken"]!.GetValue<string>()}\"");
+        _http.DefaultRequestHeaders.Add("Authorization", $"{ClientHeader}, Token=\"{AccessToken}\"");
     }
 
     private async Task RunStartupWizardAsync(CancellationToken ct)
