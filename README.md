@@ -16,6 +16,8 @@ Early development. See [docs/PROGRESS.md](docs/PROGRESS.md).
 4. Live TV channels and the guide appear on their own after the "Refresh Xtream guide" task runs.
 5. For catch-up, set a catch-up folder and add it as a Shows library. Past programmes on archive channels appear as episodes, one show per channel.
 
+6. Optional: turn on "Enhanced Live TV page" on the Libraries tab and restart. It is at `/XtreamPro/Web/`, and with the [File Transformation](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation) plugin installed it also appears as "Live TV+" in the web client menu. Native apps (Android TV, Swiftfin, Roku) draw their own UI and cannot show it; they still get channels, guide and libraries.
+
 `.strm` files point back at this Jellyfin server, so set "Stream base URL" to an address your clients can reach if the server's local address is not right.
 
 ## Compatibility

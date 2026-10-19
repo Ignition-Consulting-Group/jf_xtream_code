@@ -1,5 +1,12 @@
 # Progress
 
+## Phase 6 - Enhanced web UI (done)
+
+- Injection spike and decision ([ADR 0008](adr/0008-enhanced-live-tv-page.md)): File Transformation when installed, otherwise the page is reachable at `/XtreamPro/Web/`.
+- Live TV page behind a feature flag: category sidebar, channel list with logos and now playing, live preview through Jellyfin HLS, now and next, three-hour guide grid, favourites (Jellyfin user data), recent channels, number-key jump, up and down zapping.
+- Graceful degradation: missing File Transformation, missing drawer and turned-off flag are all handled and tested.
+- Playwright tests cover categories, zapping, number jump, preview playback, favourites, the guide grid, the injected menu link and degradation.
+
 ## Phase 5 - Config dashboard (done)
 
 - Tabbed dashboard page ([ADR 0007](adr/0007-config-dashboard.md)): multiple provider profiles with test connection (status, expiry, connection usage), libraries and stream URL, category manager (search, bulk include or exclude, rename, reorder per Live, VOD and Series), title cleanup rules with live preview, sync status with "Run now", guide health with guide id overrides.
