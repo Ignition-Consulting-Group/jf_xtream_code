@@ -34,6 +34,16 @@ public class PluginTests
     }
 
     [Fact]
+    public void ConfigPage_HasNoTranslationPlaceholders()
+    {
+        // jellyfin-web replaces ${...} in plugin pages with translations, which breaks JavaScript template literals.
+        using var stream = typeof(Plugin).Assembly.GetManifestResourceStream(_plugin.GetPages().Single().EmbeddedResourcePath)!;
+        using var reader = new StreamReader(stream);
+
+        reader.ReadToEnd().ShouldNotContain("${");
+    }
+
+    [Fact]
     public void GetPages_UsesPluginNameSoTheDashboardLinksToIt()
     {
         _plugin.GetPages().Single().Name.ShouldBe(_plugin.Name);
