@@ -52,8 +52,9 @@ public sealed class LibrarySyncTests : IClassFixture<JellyfinFixture>, IAsyncLif
 
         await _api.RunTaskToCompletionAsync("XtreamProSyncMovies", Ct);
         await _api.RunTaskToCompletionAsync("XtreamProSyncSeries", Ct);
-        await _api.PostAsync("/Library/VirtualFolders?name=Movies&collectionType=movies&paths=%2Fmedia%2Fxtream%2Fmovies&refreshLibrary=true", new { LibraryOptions = new { } }, Ct);
-        await _api.PostAsync("/Library/VirtualFolders?name=Shows&collectionType=tvshows&paths=%2Fmedia%2Fxtream%2Fshows&refreshLibrary=true", new { LibraryOptions = new { } }, Ct);
+        await _api.PostAsync("/Library/VirtualFolders?name=Movies&collectionType=movies&paths=%2Fmedia%2Fxtream%2Fmovies&refreshLibrary=false", new { LibraryOptions = new { } }, Ct);
+        await _api.PostAsync("/Library/VirtualFolders?name=Shows&collectionType=tvshows&paths=%2Fmedia%2Fxtream%2Fshows&refreshLibrary=false", new { LibraryOptions = new { } }, Ct);
+        await _api.RunTaskToCompletionAsync("RefreshLibrary", Ct);
     }
 
     public ValueTask DisposeAsync()
