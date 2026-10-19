@@ -38,6 +38,20 @@ public class StreamUrlsTests
     }
 
     [Fact]
+    public void CatchUp_SignsStartAndLength()
+    {
+        var start = new DateTimeOffset(2026, 3, 4, 7, 0, 0, TimeSpan.Zero);
+        var url = new Uri(_urls.ForCatchUp(Provider, 101, start, 60));
+        var sig = System.Web.HttpUtility.ParseQueryString(url.Query)["sig"];
+
+        url.AbsolutePath.ShouldBe("/XtreamPro/Stream/11111111222233334444555555555555/catchup/101.ts");
+        url.Query.ShouldStartWith("?start=1772607600&minutes=60&sig=");
+        _urls.VerifyCatchUp(Provider, 101, 1772607600, 60, sig).ShouldBeTrue();
+        _urls.VerifyCatchUp(Provider, 101, 1772607600, 600, sig).ShouldBeFalse();
+        _urls.VerifyCatchUp(Provider, 101, 1772611200, 60, sig).ShouldBeFalse();
+    }
+
+    [Fact]
     public void NewSecret_IsRandom()
     {
         StreamUrls.NewSecret().ShouldNotBe(StreamUrls.NewSecret());
