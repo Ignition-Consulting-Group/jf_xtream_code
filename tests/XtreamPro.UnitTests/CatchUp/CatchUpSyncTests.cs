@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.XtreamPro.CatchUp;
 using Jellyfin.Plugin.XtreamPro.LiveTv;
+using Jellyfin.Plugin.XtreamPro.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
@@ -60,7 +61,7 @@ public sealed class CatchUpSyncTests : IDisposable
         await BuildGuide();
         var library = NSubstitute.Substitute.For<MediaBrowser.Controller.Library.ILibraryManager>();
 
-        await new Jellyfin.Plugin.XtreamPro.Tasks.SyncCatchUpTask(Sync(), library).ExecuteAsync(new Progress<double>(), TestContext.Current.CancellationToken);
+        await new Jellyfin.Plugin.XtreamPro.Tasks.SyncCatchUpTask(Sync(), library, Status).ExecuteAsync(new Progress<double>(), TestContext.Current.CancellationToken);
 
         library.Received(1).QueueLibraryScan();
     }
@@ -78,4 +79,6 @@ public sealed class CatchUpSyncTests : IDisposable
             Directory.Delete(_root, true);
         }
     }
+
+    private static SyncStatusStore Status => new(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "xtreampro-tests", System.Guid.NewGuid().ToString("N"), "status.json"));
 }

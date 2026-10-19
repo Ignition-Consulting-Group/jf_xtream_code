@@ -18,8 +18,9 @@ public class SyncSeriesTask : LibrarySyncTask
     /// </summary>
     /// <param name="sync">Sync service.</param>
     /// <param name="library">Library manager.</param>
-    public SyncSeriesTask(LibrarySync sync, ILibraryManager library)
-        : base(library, TimeSpan.FromHours(24))
+    /// <param name="status">Sync status store.</param>
+    public SyncSeriesTask(LibrarySync sync, ILibraryManager library, SyncStatusStore status)
+        : base(library, status, TimeSpan.FromHours(24))
     {
         _sync = sync;
     }

@@ -14,16 +14,19 @@ namespace Jellyfin.Plugin.XtreamPro.Tasks;
 public abstract class LibrarySyncTask : IScheduledTask
 {
     private readonly ILibraryManager _library;
+    private readonly SyncStatusStore _status;
     private readonly TimeSpan _interval;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LibrarySyncTask"/> class.
     /// </summary>
     /// <param name="library">Library manager.</param>
+    /// <param name="status">Where the last report is kept for the dashboard.</param>
     /// <param name="interval">Default run interval.</param>
-    protected LibrarySyncTask(ILibraryManager library, TimeSpan interval)
+    protected LibrarySyncTask(ILibraryManager library, SyncStatusStore status, TimeSpan interval)
     {
         _library = library;
+        _status = status;
         _interval = interval;
     }
 
@@ -43,6 +46,7 @@ public abstract class LibrarySyncTask : IScheduledTask
     public async Task ExecuteAsync(IProgress<double> progress, CancellationToken cancellationToken)
     {
         var report = await SyncAsync(progress, cancellationToken).ConfigureAwait(false);
+        _status.Record(Key, report, DateTimeOffset.UtcNow);
         if (report.Added + report.Updated + report.Removed > 0)
         {
             _library.QueueLibraryScan();

@@ -19,8 +19,9 @@ public class SyncCatchUpTask : LibrarySyncTask
     /// </summary>
     /// <param name="sync">Sync service.</param>
     /// <param name="library">Library manager.</param>
-    public SyncCatchUpTask(CatchUpSync sync, ILibraryManager library)
-        : base(library, TimeSpan.FromHours(1))
+    /// <param name="status">Sync status store.</param>
+    public SyncCatchUpTask(CatchUpSync sync, ILibraryManager library, SyncStatusStore status)
+        : base(library, status, TimeSpan.FromHours(1))
     {
         _sync = sync;
     }
