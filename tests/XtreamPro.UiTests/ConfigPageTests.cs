@@ -24,8 +24,9 @@ public partial class ConfigPageTests : IClassFixture<ConfigPageFixture>
 
     private static async Task SaveAsync(IPage page)
     {
-        await page.GetByRole(AriaRole.Button, new() { Name = "Save" }).ClickAsync();
-        await page.WaitForResponseAsync(r => r.Url.Contains("/Configuration", StringComparison.Ordinal) && r.Request.Method == "POST");
+        await page.RunAndWaitForResponseAsync(
+            () => page.GetByRole(AriaRole.Button, new() { Name = "Save" }).ClickAsync(),
+            r => r.Url.Contains("/Configuration", StringComparison.Ordinal) && r.Request.Method == "POST");
     }
 
     [Fact]
