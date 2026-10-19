@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<episodedetails>
+  <title>Pilot</title>
+  <showtitle>Fake Show</showtitle>
+  <season>1</season>
+  <episode>1</episode>
+  <plot>Pilot plot.</plot>
+  <aired>2019-01-01</aired>
+  <rating>7.9</rating>
+  <uniqueid type="tmdb" default="true">9001</uniqueid>
+  <thumb>http://fake.xtream.test/eps/4001.jpg</thumb>
+</episodedetails>
