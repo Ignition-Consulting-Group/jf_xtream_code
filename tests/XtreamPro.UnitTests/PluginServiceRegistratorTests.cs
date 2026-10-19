@@ -48,5 +48,6 @@ public class PluginServiceRegistratorTests
     public void RegisterServices_AddsLibrarySync()
     {
         _provider.GetRequiredService<Jellyfin.Plugin.XtreamPro.Sync.LibrarySync>().ShouldNotBeNull();
+        _provider.GetRequiredService<Jellyfin.Plugin.XtreamPro.CatchUp.CatchUpSync>().ShouldNotBeNull();
     }
 }
