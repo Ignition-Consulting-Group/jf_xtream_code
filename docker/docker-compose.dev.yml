@@ -1,0 +1,22 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:12.2.20261005-225228
+    ports:
+      - "8096:8096"
+    volumes:
+      - ./data/config:/config
+      - ./data/cache:/cache
+      - ./data/media:/media/xtream
+      - ../artifacts/plugin:/config/plugins/XtreamPro
+    env_file:
+      - path: ../.env
+        required: false
+    depends_on:
+      - fake-xtream
+
+  fake-xtream:
+    build:
+      context: ..
+      dockerfile: tools/FakeXtreamServer/Dockerfile
+    ports:
+      - "8080:8080"
