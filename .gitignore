@@ -8,3 +8,5 @@ coverage/
 *.user
 .env
 docker/data/
+*.received.*
+BenchmarkDotNet.Artifacts/
