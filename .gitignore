@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+.idea/
+artifacts/
+TestResults/
+coverage/
+*.user
+.env
+docker/data/

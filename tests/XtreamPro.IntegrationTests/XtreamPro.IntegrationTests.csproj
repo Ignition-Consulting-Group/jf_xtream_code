@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Testcontainers" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Jellyfin.Plugin.XtreamPro\Jellyfin.Plugin.XtreamPro.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\..\tools\FakeXtreamServer\FakeXtreamServer.csproj" />
+  </ItemGroup>
+
+</Project>
