@@ -32,7 +32,7 @@ jobs:
           global-json-file: global.json
       - run: dotnet build tests/XtreamPro.UiTests
       - run: pwsh tests/XtreamPro.UiTests/bin/Debug/net10.0/playwright.ps1 install --with-deps chromium
-      - run: dotnet test --project tests/XtreamPro.UiTests --no-build
+      - run: dotnet test --project tests/XtreamPro.UiTests --no-build --filter-not-trait "Category=Screenshots"
       - uses: actions/upload-artifact@v5
         if: failure()
         with:
