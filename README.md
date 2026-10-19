@@ -1,0 +1,34 @@
+# Xtream Pro for Jellyfin
+
+A Jellyfin plugin for Xtream Codes compatible IPTV providers. Live TV and the guide go through Jellyfin's native Live TV, and VOD and series are synced into regular Movies and Shows libraries using `.strm` and `.nfo` files, so they get posters, resume, search and collections like any other media.
+
+**You need a legitimate subscription with an Xtream Codes compatible provider.** This plugin is only a client. It ships no content, playlists or provider details.
+
+## Status
+
+Early development. See [docs/PROGRESS.md](docs/PROGRESS.md).
+
+## Compatibility
+
+| Plugin | Jellyfin |
+|---|---|
+| 0.x | 12.2 |
+
+## Development
+
+Requirements: .NET 10 SDK, Docker, GNU make.
+
+```sh
+dotnet tool restore && dotnet husky install   # pre-commit hook: format + unit tests
+make test        # unit tests
+make coverage    # unit tests with coverage
+make test-int    # integration tests, including a real Jellyfin container
+make dev-up      # Jellyfin on :8096 with the plugin, FakeXtreamServer on :8080
+make dev-reload  # rebuild the plugin, restart Jellyfin, tail logs
+```
+
+To smoke test against a real provider, copy `.env.example` to `.env` and fill it in. `.env` is git-ignored.
+
+## License
+
+GPL-3.0, as required for plugins that link against Jellyfin.
