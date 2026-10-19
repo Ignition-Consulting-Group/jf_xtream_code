@@ -83,6 +83,15 @@ public sealed class LibrarySyncTests : IClassFixture<JellyfinFixture>, IAsyncLif
     }
 
     [Fact]
+    public async Task SyncAndScan_NeverOpenStreams()
+    {
+        await ItemsAsync("Episode", ExpectedEpisodes);
+        await Task.Delay(TimeSpan.FromSeconds(10), Ct);
+
+        (await _jellyfin.FakeProviderLogAsync()).ShouldNotContain("/series/demo/");
+    }
+
+    [Fact]
     public async Task Movie_PlaysThroughTheSignedRedirect()
     {
         var movie = (await ItemsAsync("Movie", ExpectedMovies)).First(m => m!["Name"]!.GetValue<string>() == "Fake Movie 1")!["Id"]!.GetValue<string>();

@@ -16,14 +16,17 @@ namespace Jellyfin.Plugin.XtreamPro.Sync;
 public class LibraryWriter
 {
     private readonly int _batchSize;
+    private readonly bool _emptyIsValid;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LibraryWriter"/> class.
     /// </summary>
     /// <param name="batchSize">Items per batch. Progress is reported and the thread yielded after each batch.</param>
-    public LibraryWriter(int batchSize = 500)
+    /// <param name="emptyIsValid">Whether an empty plan should remove everything. Off by default, so a provider outage cannot wipe a library.</param>
+    public LibraryWriter(int batchSize = 500, bool emptyIsValid = false)
     {
         _batchSize = batchSize;
+        _emptyIsValid = emptyIsValid;
     }
 
     /// <summary>
@@ -102,7 +105,7 @@ public class LibraryWriter
         }
 
         var removed = 0;
-        if (items.Count > 0)
+        if (items.Count > 0 || _emptyIsValid)
         {
             var kept = next.Values.SelectMany(f => f.Keys).ToHashSet();
             foreach (var (_, files) in state.Where(s => !next.ContainsKey(s.Key)))

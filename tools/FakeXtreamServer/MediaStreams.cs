@@ -5,7 +5,9 @@ public class MediaStreams
     private readonly byte[] _loop = File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Media", "loop.ts"));
     private int _active;
 
-    public async Task Handle(HttpContext context, string username, string password, string file, Catalogue catalogue)
+    private const int OnDemandLoops = 5;
+
+    public async Task Handle(HttpContext context, string username, string password, string file, Catalogue catalogue, bool live)
     {
         if (!catalogue.IsValid(username, password))
         {
@@ -30,11 +32,19 @@ public class MediaStreams
         {
             context.Response.ContentType = "video/mp2t";
             var aborted = context.RequestAborted;
-            while (!aborted.IsCancellationRequested)
+            if (!live)
+            {
+                context.Response.ContentLength = _loop.Length * OnDemandLoops;
+            }
+
+            for (var i = 0; live || i < OnDemandLoops; i++)
             {
                 await context.Response.Body.WriteAsync(_loop, aborted);
                 await context.Response.Body.FlushAsync(aborted);
-                await Task.Delay(TimeSpan.FromSeconds(1), aborted);
+                if (live)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1), aborted);
+                }
             }
         }
         catch (OperationCanceledException)

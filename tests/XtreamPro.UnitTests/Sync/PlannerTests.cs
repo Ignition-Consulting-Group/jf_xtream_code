@@ -71,6 +71,12 @@ public class PlannerTests
     }
 
     [Fact]
+    public void Movies_ListedTwice_ArePlannedOnce()
+    {
+        _planner.Movies(_profile, Categories, [Vod(1, "A"), Vod(1, "A")]).ShouldHaveSingleItem();
+    }
+
+    [Fact]
     public void Movies_MissingExtension_DefaultsToMp4()
     {
         _planner.Movies(_profile, Categories, [Vod(1, "A", ext: null)]).Single().Files.Keys.ShouldContain(k => k.EndsWith(".strm", StringComparison.Ordinal));

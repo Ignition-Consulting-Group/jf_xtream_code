@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Jellyfin.Plugin.XtreamPro.Sync;
 using Jellyfin.Plugin.XtreamPro.Web;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,7 @@ public class StreamControllerTests
     {
         _provider.Configuration.StreamSecret = StreamUrls.NewSecret();
         _urls = new StreamUrls("http://jf", _provider.Configuration.StreamSecret);
-        _controller = new StreamController(_provider.Settings, _provider.Clients);
+        _controller = new StreamController(_provider.Settings, _provider.Clients, new Jellyfin.Plugin.XtreamPro.Api.AccountMonitor(_provider.Clients, TimeProvider.System));
     }
 
     private string Sig(StreamKind kind, int id) => new Uri(_urls.For(_provider.Profile.Id, kind, id, "mkv")).Query["?sig=".Length..];
@@ -29,6 +30,28 @@ public class StreamControllerTests
         var result = _controller.Get(_provider.Profile.Id.ToString("N"), kind, "201.mkv", Sig(streamKind, 201));
 
         result.ShouldBeOfType<RedirectResult>().Url.ShouldBe(expected);
+    }
+
+    [Fact]
+    public async Task GetCatchUp_RedirectsToTimeshiftInTheProviderTimezone()
+    {
+        var start = new DateTimeOffset(2026, 7, 4, 7, 0, 0, TimeSpan.Zero);
+        var sig = System.Web.HttpUtility.ParseQueryString(new Uri(_urls.ForCatchUp(_provider.Profile.Id, 101, start, 60)).Query)["sig"];
+
+        var result = await _controller.GetCatchUp(_provider.Profile.Id.ToString("N"), "101.ts", start.ToUnixTimeSeconds(), 60, sig, TestContext.Current.CancellationToken);
+
+        result.ShouldBeOfType<RedirectResult>().Url.ShouldBe("http://fake.xtream.test/timeshift/demo/demo/60/2026-07-04:08-00/101.ts");
+    }
+
+    [Fact]
+    public async Task GetCatchUp_WithTamperedLength_IsForbidden()
+    {
+        var start = DateTimeOffset.UtcNow.AddHours(-2);
+        var sig = System.Web.HttpUtility.ParseQueryString(new Uri(_urls.ForCatchUp(_provider.Profile.Id, 101, start, 60)).Query)["sig"];
+
+        var result = await _controller.GetCatchUp(_provider.Profile.Id.ToString("N"), "101.ts", start.ToUnixTimeSeconds(), 600, sig, TestContext.Current.CancellationToken);
+
+        result.ShouldBeOfType<StatusCodeResult>().StatusCode.ShouldBe(StatusCodes.Status403Forbidden);
     }
 
     [Fact]

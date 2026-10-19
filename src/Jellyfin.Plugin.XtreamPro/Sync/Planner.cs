@@ -45,7 +45,7 @@ public partial class Planner
         var names = CategoryNames(categories);
         var used = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var planned = new List<SyncItem>();
-        foreach (var item in items)
+        foreach (var item in items.DistinctBy(i => i.StreamId))
         {
             if (!Include(profile, profile.VodCategories, names, item.CategoryId))
             {

@@ -56,6 +56,9 @@ public class ProviderProfile
     /// <summary>Gets or sets a value indicating whether series are synced to the shows folder.</summary>
     public bool EnableSeries { get; set; } = true;
 
+    /// <summary>Gets or sets a value indicating whether past programmes on archive channels go to the catch-up folder.</summary>
+    public bool EnableCatchUp { get; set; } = true;
+
     /// <summary>Gets or sets a value indicating whether categories that look adult are skipped.</summary>
     public bool SkipAdultCategories { get; set; } = true;
 

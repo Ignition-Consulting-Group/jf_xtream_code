@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using Jellyfin.Plugin.XtreamPro.Api;
+using Jellyfin.Plugin.XtreamPro.CatchUp;
 using Jellyfin.Plugin.XtreamPro.Configuration;
 using Jellyfin.Plugin.XtreamPro.LiveTv;
 using Jellyfin.Plugin.XtreamPro.Sync;
@@ -48,6 +49,14 @@ public class PluginServiceRegistrator : IPluginServiceRegistrator
             () => applicationHost.GetApiUrlForLocalAccess(),
             sp.GetRequiredService<TimeProvider>(),
             sp.GetRequiredService<ILogger<LibrarySync>>()));
+        serviceCollection.AddSingleton(sp => new CatchUpSync(
+            sp.GetRequiredService<IXtreamSettings>(),
+            sp.GetRequiredService<LiveCatalog>(),
+            sp.GetRequiredService<GuideStore>(),
+            DataDirectory(sp),
+            () => applicationHost.GetApiUrlForLocalAccess(),
+            sp.GetRequiredService<TimeProvider>(),
+            sp.GetRequiredService<ILogger<CatchUpSync>>()));
     }
 
     private static string DataDirectory(IServiceProvider services)

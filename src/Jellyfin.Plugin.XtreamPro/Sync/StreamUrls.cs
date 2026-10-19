@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using Jellyfin.Plugin.XtreamPro.Configuration;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace Jellyfin.Plugin.XtreamPro.Sync;
@@ -27,6 +28,26 @@ public class StreamUrls
     }
 
     /// <summary>
+    /// Creates the URL builder from plugin settings, generating and saving the signing secret on first use.
+    /// </summary>
+    /// <param name="settings">Plugin settings.</param>
+    /// <param name="localServerUrl">Gets the server's local address, used when no stream base URL is set.</param>
+    /// <returns>The URL builder.</returns>
+    public static StreamUrls FromSettings(IXtreamSettings settings, Func<string> localServerUrl)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+        ArgumentNullException.ThrowIfNull(localServerUrl);
+        var config = settings.Current;
+        if (string.IsNullOrEmpty(config.StreamSecret))
+        {
+            config.StreamSecret = NewSecret();
+            settings.Save();
+        }
+
+        return new StreamUrls(string.IsNullOrWhiteSpace(config.StreamBaseUrl) ? localServerUrl() : config.StreamBaseUrl, config.StreamSecret);
+    }
+
+    /// <summary>
     /// Creates a new random signing secret.
     /// </summary>
     /// <returns>A base64 secret.</returns>
@@ -41,7 +62,35 @@ public class StreamUrls
     /// <param name="extension">Container extension.</param>
     /// <returns>The URL.</returns>
     public string For(Guid providerId, StreamKind kind, int id, string extension)
-        => string.Create(CultureInfo.InvariantCulture, $"{_baseUrl}/XtreamPro/Stream/{providerId:N}/{Kind(kind)}/{id}.{extension}?sig={Sign(providerId, kind, id)}");
+        => string.Create(CultureInfo.InvariantCulture, $"{_baseUrl}/XtreamPro/Stream/{providerId:N}/{Kind(kind)}/{id}.{extension}?sig={Sign(Payload(providerId, kind, id))}");
+
+    /// <summary>
+    /// Builds the URL for a past programme on a catch-up channel.
+    /// </summary>
+    /// <param name="providerId">Provider profile id.</param>
+    /// <param name="streamId">Live stream id.</param>
+    /// <param name="start">Programme start.</param>
+    /// <param name="minutes">Programme length in minutes.</param>
+    /// <returns>The URL.</returns>
+    public string ForCatchUp(Guid providerId, int streamId, DateTimeOffset start, int minutes)
+    {
+        var unix = start.ToUnixTimeSeconds();
+        return string.Create(
+            CultureInfo.InvariantCulture,
+            $"{_baseUrl}/XtreamPro/Stream/{providerId:N}/catchup/{streamId}.ts?start={unix}&minutes={minutes}&sig={Sign(CatchUpPayload(providerId, streamId, unix, minutes))}");
+    }
+
+    /// <summary>
+    /// Checks a signature from a catch-up URL.
+    /// </summary>
+    /// <param name="providerId">Provider profile id.</param>
+    /// <param name="streamId">Live stream id.</param>
+    /// <param name="start">Start as a unix timestamp.</param>
+    /// <param name="minutes">Length in minutes.</param>
+    /// <param name="signature">Signature from the URL.</param>
+    /// <returns>True if the URL was issued by this server.</returns>
+    public bool VerifyCatchUp(Guid providerId, int streamId, long start, int minutes, string? signature)
+        => Matches(CatchUpPayload(providerId, streamId, start, minutes), signature);
 
     /// <summary>
     /// Checks a signature from a stream URL.
@@ -52,6 +101,22 @@ public class StreamUrls
     /// <param name="signature">Signature from the URL.</param>
     /// <returns>True if the URL was issued by this server.</returns>
     public bool Verify(Guid providerId, StreamKind kind, int id, string? signature)
+        => Matches(Payload(providerId, kind, id), signature);
+
+    /// <summary>
+    /// Gets the URL segment for a kind.
+    /// </summary>
+    /// <param name="kind">Stream kind.</param>
+    /// <returns>The segment.</returns>
+    public static string Kind(StreamKind kind) => kind == StreamKind.Movie ? "movie" : "episode";
+
+    private static string Payload(Guid providerId, StreamKind kind, int id)
+        => string.Create(CultureInfo.InvariantCulture, $"{providerId:N}/{Kind(kind)}/{id}");
+
+    private static string CatchUpPayload(Guid providerId, int streamId, long start, int minutes)
+        => string.Create(CultureInfo.InvariantCulture, $"{providerId:N}/catchup/{streamId}/{start}/{minutes}");
+
+    private bool Matches(string payload, string? signature)
     {
         if (string.IsNullOrEmpty(signature))
         {
@@ -62,7 +127,7 @@ public class StreamUrls
         {
             return CryptographicOperations.FixedTimeEquals(
                 WebEncoders.Base64UrlDecode(signature),
-                WebEncoders.Base64UrlDecode(Sign(providerId, kind, id)));
+                WebEncoders.Base64UrlDecode(Sign(payload)));
         }
         catch (FormatException)
         {
@@ -70,16 +135,6 @@ public class StreamUrls
         }
     }
 
-    /// <summary>
-    /// Gets the URL segment for a kind.
-    /// </summary>
-    /// <param name="kind">Stream kind.</param>
-    /// <returns>The segment.</returns>
-    public static string Kind(StreamKind kind) => kind == StreamKind.Movie ? "movie" : "episode";
-
-    private string Sign(Guid providerId, StreamKind kind, int id)
-    {
-        var payload = Encoding.UTF8.GetBytes(string.Create(CultureInfo.InvariantCulture, $"{providerId:N}/{Kind(kind)}/{id}"));
-        return WebEncoders.Base64UrlEncode(HMACSHA256.HashData(_secret, payload)[..16]);
-    }
+    private string Sign(string payload)
+        => WebEncoders.Base64UrlEncode(HMACSHA256.HashData(_secret, Encoding.UTF8.GetBytes(payload))[..16]);
 }
