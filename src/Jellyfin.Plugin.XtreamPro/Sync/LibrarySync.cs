@@ -114,17 +114,7 @@ public class LibrarySync
         => string.IsNullOrWhiteSpace(profile.Name) ? profile.Id.ToString("N") : profile.Name;
 
     private Planner CreatePlanner(string? folderTag)
-    {
-        var config = _settings.Current;
-        if (string.IsNullOrEmpty(config.StreamSecret))
-        {
-            config.StreamSecret = StreamUrls.NewSecret();
-            _settings.Save();
-        }
-
-        var baseUrl = string.IsNullOrWhiteSpace(config.StreamBaseUrl) ? _localServerUrl() : config.StreamBaseUrl;
-        return new Planner(new TitleCleaner(config.TitleRules), new StreamUrls(baseUrl, config.StreamSecret), folderTag);
-    }
+        => new(new TitleCleaner(_settings.Current.TitleRules), StreamUrls.FromSettings(_settings, _localServerUrl), folderTag);
 
     private static async Task<(IReadOnlyList<SyncItem> Items, IReadOnlySet<string> Keep)> PlanMoviesAsync(
         ProviderProfile profile,
@@ -146,6 +136,7 @@ public class LibrarySync
         var categories = await client.GetSeriesCategoriesAsync(cancellationToken).ConfigureAwait(false);
         var series = (await client.GetSeriesAsync(null, cancellationToken).ConfigureAwait(false))
             .Where(s => planner.IncludeSeries(profile, categories, s))
+            .DistinctBy(s => s.SeriesId)
             .ToList();
 
         var cache = await SeriesInfoCache.LoadAsync(Path.Combine(_dataDirectory, $"series-info-{profile.Id:N}.json"), cancellationToken).ConfigureAwait(false);
