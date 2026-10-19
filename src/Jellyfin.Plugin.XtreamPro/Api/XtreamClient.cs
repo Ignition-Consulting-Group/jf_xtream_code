@@ -16,7 +16,6 @@ namespace Jellyfin.Plugin.XtreamPro.Api;
 public class XtreamClient
 {
     private readonly HttpClient _http;
-    private readonly string _userAgent;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="XtreamClient"/> class.
@@ -27,9 +26,14 @@ public class XtreamClient
     public XtreamClient(HttpClient http, XtreamCredentials credentials, string userAgent)
     {
         _http = http;
-        _userAgent = userAgent;
+        UserAgent = userAgent;
         Urls = new XtreamUrlBuilder(credentials);
     }
+
+    /// <summary>
+    /// Gets the User-Agent sent to this provider.
+    /// </summary>
+    public string UserAgent { get; }
 
     /// <summary>
     /// Gets the URL builder for this provider.
@@ -128,7 +132,7 @@ public class XtreamClient
     private async Task<HttpResponseMessage> SendAsync(Uri uri, CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, uri);
-        request.Headers.TryAddWithoutValidation("User-Agent", _userAgent);
+        request.Headers.TryAddWithoutValidation("User-Agent", UserAgent);
         var response = await _http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
         try
         {
