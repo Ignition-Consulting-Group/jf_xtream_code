@@ -76,6 +76,18 @@ public class LiveCatalogTests
         found.Value.Channel.StreamId.ShouldBe(102);
     }
 
+    [Fact]
+    public async Task EpgOverrides_ReplaceTheProviderGuideId()
+    {
+        _provider.Profile.EpgOverrides.Add(new() { StreamId = 102, EpgChannelId = "news.one.uk" });
+
+        var streams = await _catalog.GetStreamsAsync(_provider.Profile, TestContext.Current.CancellationToken);
+        var channels = await _catalog.GetChannelsAsync(true, TestContext.Current.CancellationToken);
+
+        streams.Single(s => s.StreamId == 102).EpgChannelId.ShouldBe("news.one.uk");
+        channels.Single(c => c.Id == ChannelId.Format(_provider.Profile.Id, 102)).TunerChannelId.ShouldBe("news.one.uk");
+    }
+
     [Theory]
     [InlineData("m3u_123")]
     [InlineData("xtreampro_11111111222233334444555555555555_999")]

@@ -28,6 +28,16 @@ public class ChannelMapperTests
     }
 
     [Fact]
+    public void Map_UserCategoryOrderComesFirst()
+    {
+        _profile.LiveCategories.Add(new CategoryRule { CategoryId = "1", Order = 0 });
+
+        var channels = ChannelMapper.Map(_profile, Categories, [Channel(10, "2", 1), Channel(11, "1", 2)]);
+
+        channels.Select(c => c.Name).ShouldBe(["Ch 11", "Ch 10"]);
+    }
+
+    [Fact]
     public void Map_UsesProviderNumberAndUserOverrides()
     {
         _profile.ChannelNumbers.Add(new ChannelNumberOverride { StreamId = 11, Number = "501" });

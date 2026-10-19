@@ -13,4 +13,7 @@ public class CategoryRule
 
     /// <summary>Gets or sets the display name override.</summary>
     public string? Rename { get; set; }
+
+    /// <summary>Gets or sets the position among categories. Categories without one keep provider order after those with one.</summary>
+    public int? Order { get; set; }
 }

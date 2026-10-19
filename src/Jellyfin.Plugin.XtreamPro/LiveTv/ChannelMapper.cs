@@ -29,7 +29,10 @@ public static class ChannelMapper
     {
         var rules = profile.LiveCategories.ToDictionary(r => r.CategoryId);
         var categoryOrder = categories
-            .Select((c, index) => (c, index))
+            .Select((c, index) => (c, Position: index))
+            .OrderBy(x => x.c.CategoryId is not null && rules.TryGetValue(x.c.CategoryId, out var rule) && rule.Order is { } order ? order : int.MaxValue)
+            .ThenBy(x => x.Position)
+            .Select((x, index) => (x.c, index))
             .Where(x => x.c.CategoryId is not null)
             .ToDictionary(x => x.c.CategoryId!, x => (x.index, Name: rules.GetValueOrDefault(x.c.CategoryId!)?.Rename ?? x.c.CategoryName));
         var overrides = profile.ChannelNumbers.ToDictionary(o => o.StreamId, o => o.Number);

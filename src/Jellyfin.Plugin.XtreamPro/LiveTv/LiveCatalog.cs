@@ -117,7 +117,10 @@ public class LiveCatalog
         {
             var client = _clients.Create(profile);
             var categories = await client.GetLiveCategoriesAsync(cancellationToken).ConfigureAwait(false);
-            var streams = await client.GetLiveChannelsAsync(null, cancellationToken).ConfigureAwait(false);
+            var guideIds = profile.EpgOverrides.ToDictionary(o => o.StreamId, o => o.EpgChannelId);
+            var streams = (await client.GetLiveChannelsAsync(null, cancellationToken).ConfigureAwait(false))
+                .Select(s => guideIds.TryGetValue(s.StreamId, out var guideId) ? s with { EpgChannelId = guideId } : s)
+                .ToList();
             var guide = await _guides.LoadAsync(profile.Id, cancellationToken).ConfigureAwait(false);
             var channels = ChannelMapper.Map(profile, categories, streams, guide?.Icons);
 
