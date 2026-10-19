@@ -8,6 +8,7 @@ using Jellyfin.Plugin.XtreamPro.Configuration;
 using Jellyfin.Plugin.XtreamPro.LiveTv;
 using Jellyfin.Plugin.XtreamPro.Sync;
 using Jellyfin.Plugin.XtreamPro.Tasks;
+using Jellyfin.Plugin.XtreamPro.Web;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.LiveTv;
@@ -32,6 +33,7 @@ public class PluginServiceRegistrator : IPluginServiceRegistrator
         serviceCollection.AddSingleton<ConnectionTracker>();
         serviceCollection.AddSingleton<XtreamClientFactory>();
         serviceCollection.AddSingleton<AccountMonitor>();
+        serviceCollection.AddSingleton<EnhancedUiStatus>();
         serviceCollection
             .AddHttpClient(XtreamClientFactory.HttpClientName)
             .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { AutomaticDecompression = DecompressionMethods.All })
