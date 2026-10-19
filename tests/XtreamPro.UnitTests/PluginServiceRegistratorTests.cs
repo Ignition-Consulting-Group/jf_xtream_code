@@ -43,4 +43,10 @@ public class PluginServiceRegistratorTests
         _provider.GetServices<IListingsProvider>().ShouldHaveSingleItem().ShouldBeOfType<XtreamListingsProvider>();
         _provider.GetServices<IHostedService>().OfType<ListingsRegistration>().ShouldHaveSingleItem();
     }
+
+    [Fact]
+    public void RegisterServices_AddsLibrarySync()
+    {
+        _provider.GetRequiredService<Jellyfin.Plugin.XtreamPro.Sync.LibrarySync>().ShouldNotBeNull();
+    }
 }

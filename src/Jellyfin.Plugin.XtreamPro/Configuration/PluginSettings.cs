@@ -6,4 +6,6 @@ namespace Jellyfin.Plugin.XtreamPro.Configuration;
 internal sealed class PluginSettings : IXtreamSettings
 {
     public PluginConfiguration Current => Plugin.Instance?.Configuration ?? new PluginConfiguration();
+
+    public void Save() => Plugin.Instance?.SaveConfiguration();
 }

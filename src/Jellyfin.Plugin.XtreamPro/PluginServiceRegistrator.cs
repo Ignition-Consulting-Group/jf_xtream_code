@@ -5,12 +5,14 @@ using System.Net.Http;
 using Jellyfin.Plugin.XtreamPro.Api;
 using Jellyfin.Plugin.XtreamPro.Configuration;
 using Jellyfin.Plugin.XtreamPro.LiveTv;
+using Jellyfin.Plugin.XtreamPro.Sync;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.LiveTv;
 using MediaBrowser.Controller.Plugins;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace Jellyfin.Plugin.XtreamPro;
 
@@ -33,10 +35,21 @@ public class PluginServiceRegistrator : IPluginServiceRegistrator
             .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { AutomaticDecompression = DecompressionMethods.All })
             .AddHttpMessageHandler(sp => new ResilienceHandler(sp.GetRequiredService<XtreamResilience>()));
 
-        serviceCollection.AddSingleton(sp => new GuideStore(Path.Combine(sp.GetRequiredService<IApplicationPaths>().DataPath, "xtreampro")));
+        serviceCollection.AddSingleton(sp => new GuideStore(DataDirectory(sp)));
         serviceCollection.AddSingleton<LiveCatalog>();
         serviceCollection.AddSingleton<ITunerHost, XtreamTunerHost>();
         serviceCollection.AddSingleton<IListingsProvider, XtreamListingsProvider>();
         serviceCollection.AddHostedService<ListingsRegistration>();
+
+        serviceCollection.AddSingleton(sp => new LibrarySync(
+            sp.GetRequiredService<IXtreamSettings>(),
+            sp.GetRequiredService<XtreamClientFactory>(),
+            DataDirectory(sp),
+            () => applicationHost.GetApiUrlForLocalAccess(),
+            sp.GetRequiredService<TimeProvider>(),
+            sp.GetRequiredService<ILogger<LibrarySync>>()));
     }
+
+    private static string DataDirectory(IServiceProvider services)
+        => Path.Combine(services.GetRequiredService<IApplicationPaths>().DataPath, "xtreampro");
 }

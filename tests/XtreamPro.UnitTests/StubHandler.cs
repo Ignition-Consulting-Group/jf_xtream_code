@@ -18,6 +18,8 @@ internal sealed class StubHandler : HttpMessageHandler
 
     public List<HttpRequestMessage> Requests { get; } = [];
 
+    public HttpResponseMessage Respond(HttpRequestMessage request) => _respond(request);
+
     public static StubHandler ForFixture(string fixture) => new(_ => Json(Fixture.Read(fixture)));
 
     public static HttpResponseMessage Json(string body) => new(HttpStatusCode.OK) { Content = new StringContent(body) };

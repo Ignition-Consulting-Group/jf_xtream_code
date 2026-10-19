@@ -15,9 +15,7 @@ internal sealed class FakeProvider
     public FakeProvider()
     {
         Handler = new StubHandler(r => StubHandler.Json(Fixture.Read(FixtureFor(r.RequestUri!))));
-        var httpFactory = Substitute.For<IHttpClientFactory>();
-        httpFactory.CreateClient(Arg.Any<string>()).Returns(_ => new HttpClient(Handler));
-        Clients = new XtreamClientFactory(httpFactory);
+        Clients = ClientsFor(Handler);
         Settings = Substitute.For<IXtreamSettings>();
         Settings.Current.Returns(Configuration);
         Configuration.Providers.Add(Profile);
@@ -33,6 +31,13 @@ internal sealed class FakeProvider
 
     public IXtreamSettings Settings { get; }
 
+    public static XtreamClientFactory ClientsFor(StubHandler handler)
+    {
+        var httpFactory = Substitute.For<IHttpClientFactory>();
+        httpFactory.CreateClient(Arg.Any<string>()).Returns(_ => new HttpClient(handler));
+        return new XtreamClientFactory(httpFactory);
+    }
+
     private static string FixtureFor(Uri uri)
     {
         if (uri.AbsolutePath == "/xmltv.php")
@@ -46,6 +51,11 @@ internal sealed class FakeProvider
             "get_live_categories" => "live_categories.json",
             "get_live_streams" => "live_streams.json",
             "get_short_epg" => "short_epg.json",
+            "get_vod_categories" => "vod_categories.json",
+            "get_vod_streams" => "vod_streams.json",
+            "get_series_categories" => "series_categories.json",
+            "get_series" => "series.json",
+            "get_series_info" => "series_info.json",
             var action => throw new InvalidOperationException("No fixture for " + action),
         };
     }
