@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tv SYSTEM "xmltv.dtd">
+<tv generator-info-name="fake">
+  <channel id="news.one.uk">
+    <display-name>News One</display-name>
+    <icon src="http://fake.xtream.test/guide/news.png" />
+  </channel>
+  <channel id="sports.two">
+    <display-name>Sports Two</display-name>
+  </channel>
+  <programme start="20260304070000 +0000" stop="20260304080000 +0000" channel="news.one.uk">
+    <title lang="en">Morning News &amp; Weather</title>
+    <sub-title>Tuesday</sub-title>
+    <desc lang="en">The morning bulletin.</desc>
+    <category lang="en">News</category>
+    <category lang="en">Weather</category>
+    <episode-num system="xmltv_ns">2.4.0/1</episode-num>
+    <icon src="http://fake.xtream.test/guide/p1.jpg" />
+    <date>2026</date>
+    <unknown-element>ignored</unknown-element>
+  </programme>
+  <programme start="20260304080000 +0100" stop="20260304090000 +0100" channel="news.one.uk">
+    <title>With Offset</title>
+  </programme>
+  <programme start="20260304090000" stop="20260304100000" channel="sports.two">
+    <title>No Timezone</title>
+  </programme>
+  <programme start="20260304100000 +0000" channel="sports.two">
+    <title>No Stop</title>
+  </programme>
+  <programme start="garbage" stop="20260304100000 +0000" channel="sports.two">
+    <title>Bad Start</title>
+  </programme>
+  <programme start="202603041100 +0000" stop="202603041200 +0000" channel="sports.two">
+    <title>Short Time Format</title>
+  </programme>
+</tv>
