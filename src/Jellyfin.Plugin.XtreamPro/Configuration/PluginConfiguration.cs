@@ -30,6 +30,9 @@ public class PluginConfiguration : BasePluginConfiguration
     /// <summary>Gets or sets the title cleanup patterns, applied in order.</summary>
     public Collection<string> TitleRules { get; set; } = [.. TitleCleaner.DefaultRules];
 
+    /// <summary>Gets or sets a value indicating whether the enhanced Live TV page is served and linked from the web client.</summary>
+    public bool EnableEnhancedLiveTv { get; set; }
+
     /// <summary>Gets or sets how many days series episode lists are cached before being fetched again.</summary>
     public int SeriesRefreshDays { get; set; } = 7;
 }

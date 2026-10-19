@@ -20,11 +20,12 @@ public class ConfigControllerTests
     private readonly LiveTvHarness _h = new();
     private readonly ITaskManager _tasks = Substitute.For<ITaskManager>();
     private readonly SyncStatusStore _status = new(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "xtreampro-tests", Guid.NewGuid().ToString("N"), "s.json"));
+    private readonly EnhancedUiStatus _enhancedUi = new() { Message = "Linked from the web client menu.", Injected = true };
     private readonly ConfigController _controller;
 
     public ConfigControllerTests()
     {
-        _controller = new ConfigController(_h.Provider.Clients, _h.Connections, _h.Catalog, _h.Guides, _tasks, _status);
+        _controller = new ConfigController(_h.Provider.Clients, _h.Connections, _h.Catalog, _h.Guides, _tasks, _status, _enhancedUi);
     }
 
     [Fact]
@@ -41,9 +42,9 @@ public class ConfigControllerTests
     public async Task TestConnection_ExplainsFailures()
     {
         var bad = await _controller.TestConnection(new ProviderProfile { Url = "nope" }, TestContext.Current.CancellationToken);
-        var refused = await new ConfigController(FakeProvider.ClientsFor(new StubHandler(_ => new HttpResponseMessage(HttpStatusCode.BadGateway))), _h.Connections, _h.Catalog, _h.Guides, _tasks, _status)
+        var refused = await new ConfigController(FakeProvider.ClientsFor(new StubHandler(_ => new HttpResponseMessage(HttpStatusCode.BadGateway))), _h.Connections, _h.Catalog, _h.Guides, _tasks, _status, _enhancedUi)
             .TestConnection(_h.Provider.Profile, TestContext.Current.CancellationToken);
-        var rejected = await new ConfigController(FakeProvider.ClientsFor(StubHandler.ForFixture("account_info_auth_failed.json")), _h.Connections, _h.Catalog, _h.Guides, _tasks, _status)
+        var rejected = await new ConfigController(FakeProvider.ClientsFor(StubHandler.ForFixture("account_info_auth_failed.json")), _h.Connections, _h.Catalog, _h.Guides, _tasks, _status, _enhancedUi)
             .TestConnection(_h.Provider.Profile, TestContext.Current.CancellationToken);
 
         bad.Ok.ShouldBeFalse();
@@ -93,6 +94,12 @@ public class ConfigControllerTests
         status.State.ShouldBe("Idle");
         status.LastResult.ShouldBe("Completed");
         status.Report.ShouldBe(new SyncReport(1, 0, 0, 5));
+    }
+
+    [Fact]
+    public void EnhancedUi_ReportsTheLinkStatus()
+    {
+        _controller.EnhancedUi().ShouldBeSameAs(_enhancedUi);
     }
 
     [Fact]

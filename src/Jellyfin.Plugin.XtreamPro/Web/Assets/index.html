@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Live TV</title>
+    <link rel="stylesheet" href="/XtreamPro/Web/livetv.css">
+</head>
+<body>
+    <header class="bar">
+        <a class="back" href="/web/">Back to Jellyfin</a>
+        <h1>Live TV</h1>
+        <p id="status" role="status" aria-live="polite"></p>
+    </header>
+    <main class="layout">
+        <nav aria-label="Categories">
+            <label class="search">Search categories <input id="category-search" type="search"></label>
+            <ul id="categories" class="categories"></ul>
+        </nav>
+        <section aria-label="Channels" class="channels">
+            <label class="search">Search all channels <input id="search" type="search" placeholder="Name or number"></label>
+            <ul id="channels" role="listbox" aria-label="Channel list" tabindex="0"></ul>
+        </section>
+        <section aria-label="Preview" class="preview">
+            <video id="video" controls muted playsinline aria-label="Live preview"></video>
+            <div class="now-next">
+                <h2 id="channel-name"></h2>
+                <button id="favourite" type="button" aria-pressed="false" hidden>Favourite</button>
+                <p><strong>Now:</strong> <span id="now">-</span></p>
+                <p><strong>Next:</strong> <span id="next">-</span></p>
+            </div>
+            <p class="hint">Up and Down change channel. Type a number to jump to it. F toggles favourite.</p>
+        </section>
+    </main>
+    <section aria-label="Guide" class="guide">
+        <h2>Guide</h2>
+        <div id="guide" role="grid" aria-label="Programme guide"></div>
+    </section>
+    <script src="/XtreamPro/Web/hls.light.min.js"></script>
+    <script src="/XtreamPro/Web/livetv.js"></script>
+</body>
+</html>
