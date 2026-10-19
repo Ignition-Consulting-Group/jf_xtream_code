@@ -1,0 +1,5 @@
+[
+{"num":1,"name":"EN | Fake Movie (2020)","stream_type":"movie","stream_id":201,"stream_icon":"http://fake.xtream.test/posters/201.jpg","rating":"7.4","rating_5based":3.7,"added":"1735689600","category_id":"10","container_extension":"mkv","custom_sid":null,"direct_source":"","tmdb":"12345"},
+{"num":"2","name":"4K - Another Fake","stream_type":"movie","stream_id":"202","stream_icon":"","rating":"","added":"","category_id":10,"container_extension":"mp4","tmdb":67890},
+{"num":3,"name":"No Rating","stream_id":203,"rating":"N/A","category_id":null,"container_extension":"","tmdb":""}
+]

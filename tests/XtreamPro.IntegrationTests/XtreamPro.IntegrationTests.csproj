@@ -1,12 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="Jellyfin.Controller" />
+    <PackageReference Include="Jellyfin.Model" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Polly.Core" />
     <PackageReference Include="Testcontainers" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Jellyfin.Plugin.XtreamPro\Jellyfin.Plugin.XtreamPro.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\..\src\Jellyfin.Plugin.XtreamPro\Jellyfin.Plugin.XtreamPro.csproj" />
     <ProjectReference Include="..\..\tools\FakeXtreamServer\FakeXtreamServer.csproj" />
   </ItemGroup>
 

@@ -4,7 +4,13 @@
     <PackageReference Include="coverlet.MTP" />
     <PackageReference Include="Jellyfin.Controller" />
     <PackageReference Include="Jellyfin.Model" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Polly.Core" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Fixtures\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
