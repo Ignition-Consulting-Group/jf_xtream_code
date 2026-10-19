@@ -6,7 +6,7 @@ GATED := Api Sync LiveTv CatchUp
 COVERAGE_ARGS := --coverlet --coverlet-output-format cobertura --coverlet-threshold 80 --coverlet-threshold-stat Total \
 	$(foreach ns,$(GATED),--coverlet-include "[Jellyfin.Plugin.XtreamPro]Jellyfin.Plugin.XtreamPro.$(ns).*")
 
-.PHONY: build test coverage test-int test-ui bench format dev-up dev-down dev-reload release-dry
+.PHONY: build test coverage test-int test-ui screenshots bench format dev-up dev-down dev-reload release-dry
 
 build:
 	dotnet build $(SLN) -c Release
@@ -21,7 +21,10 @@ test-int:
 	dotnet test --project tests/XtreamPro.IntegrationTests
 
 test-ui:
-	dotnet test --project tests/XtreamPro.UiTests
+	dotnet test --project tests/XtreamPro.UiTests --filter-not-trait "Category=Screenshots"
+
+screenshots:
+	dotnet test --project tests/XtreamPro.UiTests --filter-trait "Category=Screenshots"
 
 bench:
 	dotnet run -c Release --project benchmarks/XtreamPro.Benchmarks -- --filter '*'
@@ -45,6 +48,6 @@ dev-reload:
 	$(COMPOSE) logs -f jellyfin
 
 release-dry:
-	dotnet publish $(PLUGIN) -c Release -o artifacts/release
-	cd artifacts/release && zip -q ../xtream-pro.zip Jellyfin.Plugin.XtreamPro.dll
-	sha256sum artifacts/xtream-pro.zip
+	mkdir -p $(CURDIR)/artifacts/release
+	jprm plugin build $(PLUGIN) --output $(CURDIR)/artifacts/release --version 0.0.0
+	sha256sum artifacts/release/*.zip
