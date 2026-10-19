@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Playwright" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\XtreamPro.IntegrationTests\XtreamPro.IntegrationTests.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -26,7 +26,7 @@ public sealed class SyncTaskTests : IDisposable
     [Fact]
     public async Task MovieSync_QueuesALibraryScanWhenFilesChanged()
     {
-        var task = new SyncMoviesTask(_sync, _library);
+        var task = new SyncMoviesTask(_sync, _library, Status);
 
         await task.ExecuteAsync(new Progress<double>(), TestContext.Current.CancellationToken);
         await task.ExecuteAsync(new Progress<double>(), TestContext.Current.CancellationToken);
@@ -37,7 +37,7 @@ public sealed class SyncTaskTests : IDisposable
     [Fact]
     public async Task SeriesSync_QueuesALibraryScanWhenFilesChanged()
     {
-        await new SyncSeriesTask(_sync, _library).ExecuteAsync(new Progress<double>(), TestContext.Current.CancellationToken);
+        await new SyncSeriesTask(_sync, _library, Status).ExecuteAsync(new Progress<double>(), TestContext.Current.CancellationToken);
 
         _library.Received(1).QueueLibraryScan();
     }
@@ -45,8 +45,8 @@ public sealed class SyncTaskTests : IDisposable
     [Fact]
     public void Tasks_AreInTheXtreamCategory()
     {
-        new SyncMoviesTask(_sync, _library).Category.ShouldBe("Xtream Pro");
-        new SyncSeriesTask(_sync, _library).Key.ShouldBe("XtreamProSyncSeries");
+        new SyncMoviesTask(_sync, _library, Status).Category.ShouldBe("Xtream Pro");
+        new SyncSeriesTask(_sync, _library, Status).Key.ShouldBe("XtreamProSyncSeries");
     }
 
     public void Dispose()
@@ -56,4 +56,6 @@ public sealed class SyncTaskTests : IDisposable
             Directory.Delete(_root, true);
         }
     }
+
+    private static SyncStatusStore Status => new(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "xtreampro-tests", System.Guid.NewGuid().ToString("N"), "status.json"));
 }

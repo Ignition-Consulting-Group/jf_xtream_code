@@ -50,6 +50,9 @@ public class ProviderProfile
     /// <summary>Gets or sets the channel number overrides.</summary>
     public Collection<ChannelNumberOverride> ChannelNumbers { get; set; } = [];
 
+    /// <summary>Gets or sets guide channel overrides for streams whose provider mapping is wrong or missing.</summary>
+    public Collection<EpgOverride> EpgOverrides { get; set; } = [];
+
     /// <summary>Gets or sets a value indicating whether movies are synced to the movies folder.</summary>
     public bool EnableVod { get; set; } = true;
 

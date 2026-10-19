@@ -5,13 +5,491 @@
     <title>Xtream Pro</title>
 </head>
 <body>
-    <div id="XtreamProConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button">
+    <div id="XtreamProConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox,emby-textarea">
+        <style>
+            #XtreamProConfigPage .xp-tabs { display: flex; flex-wrap: wrap; gap: .5em; margin: 1em 0; }
+            #XtreamProConfigPage .xp-tabs [aria-selected="true"] { outline: 2px solid currentColor; }
+            #XtreamProConfigPage .xp-card { border: 1px solid rgba(128, 128, 128, .35); border-radius: .4em; padding: 1em; margin-bottom: 1em; }
+            #XtreamProConfigPage .xp-row { display: flex; flex-wrap: wrap; gap: .5em; align-items: center; }
+            #XtreamProConfigPage .xp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16em, 1fr)); gap: 0 1em; }
+            #XtreamProConfigPage table { width: 100%; border-collapse: collapse; }
+            #XtreamProConfigPage th, #XtreamProConfigPage td { text-align: left; padding: .4em; border-bottom: 1px solid rgba(128, 128, 128, .25); }
+            #XtreamProConfigPage .xp-muted { opacity: .7; }
+            #XtreamProConfigPage .xp-ok { font-weight: bold; }
+            #XtreamProConfigPage .xp-error { font-weight: bold; text-decoration: underline; }
+        </style>
         <div data-role="content">
             <div class="content-primary">
-                <h2>Xtream Pro</h2>
-                <p>Provider settings arrive in a later release.</p>
+                <form id="XtreamProForm">
+                    <div class="verticalSection">
+                        <h2 class="sectionTitle">Xtream Pro</h2>
+                        <p class="xp-muted">Connects to an Xtream Codes provider you subscribe to. No content or provider details are included.</p>
+                    </div>
+
+                    <div class="xp-tabs" role="tablist" aria-label="Xtream Pro settings">
+                        <button is="emby-button" type="button" class="emby-button" role="tab" id="xp-tab-providers" aria-controls="xp-panel-providers" aria-selected="true">Providers</button>
+                        <button is="emby-button" type="button" class="emby-button" role="tab" id="xp-tab-libraries" aria-controls="xp-panel-libraries" aria-selected="false">Libraries</button>
+                        <button is="emby-button" type="button" class="emby-button" role="tab" id="xp-tab-categories" aria-controls="xp-panel-categories" aria-selected="false">Categories</button>
+                        <button is="emby-button" type="button" class="emby-button" role="tab" id="xp-tab-titles" aria-controls="xp-panel-titles" aria-selected="false">Title cleanup</button>
+                        <button is="emby-button" type="button" class="emby-button" role="tab" id="xp-tab-status" aria-controls="xp-panel-status" aria-selected="false">Sync status</button>
+                        <button is="emby-button" type="button" class="emby-button" role="tab" id="xp-tab-guide" aria-controls="xp-panel-guide" aria-selected="false">Guide health</button>
+                    </div>
+
+                    <section id="xp-panel-providers" role="tabpanel" aria-labelledby="xp-tab-providers">
+                        <div id="xp-providers"></div>
+                        <button is="emby-button" type="button" id="xp-add-provider" class="raised emby-button">Add provider</button>
+                    </section>
+
+                    <section id="xp-panel-libraries" role="tabpanel" aria-labelledby="xp-tab-libraries" hidden>
+                        <div class="inputContainer">
+                            <label class="inputLabel" for="xp-movies-path">Movies folder</label>
+                            <input is="emby-input" id="xp-movies-path" type="text" data-config="MoviesPath" />
+                            <div class="fieldDescription">Add this folder as a Movies library. Leave empty to skip movies.</div>
+                        </div>
+                        <div class="inputContainer">
+                            <label class="inputLabel" for="xp-shows-path">Shows folder</label>
+                            <input is="emby-input" id="xp-shows-path" type="text" data-config="ShowsPath" />
+                            <div class="fieldDescription">Add this folder as a Shows library. Leave empty to skip series.</div>
+                        </div>
+                        <div class="inputContainer">
+                            <label class="inputLabel" for="xp-catchup-path">Catch-up folder</label>
+                            <input is="emby-input" id="xp-catchup-path" type="text" data-config="CatchUpPath" />
+                            <div class="fieldDescription">Add this folder as a Shows library to browse past programmes. Leave empty to skip catch-up.</div>
+                        </div>
+                        <div class="inputContainer">
+                            <label class="inputLabel" for="xp-stream-base">Stream base URL</label>
+                            <input is="emby-input" id="xp-stream-base" type="url" data-config="StreamBaseUrl" placeholder="http://192.168.1.10:8096" />
+                            <div class="fieldDescription">Jellyfin address written into .strm files. Clients must be able to reach it. Leave empty to use the server's local address.</div>
+                        </div>
+                        <div class="inputContainer">
+                            <label class="inputLabel" for="xp-series-refresh">Series refresh window (days)</label>
+                            <input is="emby-input" id="xp-series-refresh" type="number" min="0" data-config="SeriesRefreshDays" />
+                            <div class="fieldDescription">How long episode lists are cached before they are fetched again.</div>
+                        </div>
+                    </section>
+
+                    <section id="xp-panel-categories" role="tabpanel" aria-labelledby="xp-tab-categories" hidden>
+                        <div class="xp-grid">
+                            <div class="selectContainer">
+                                <label class="selectLabel" for="xp-cat-provider">Provider</label>
+                                <select is="emby-select" id="xp-cat-provider"></select>
+                            </div>
+                            <div class="selectContainer">
+                                <label class="selectLabel" for="xp-cat-type">Type</label>
+                                <select is="emby-select" id="xp-cat-type">
+                                    <option value="live">Live</option>
+                                    <option value="vod">VOD</option>
+                                    <option value="series">Series</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="xp-row">
+                            <button is="emby-button" type="button" id="xp-cat-load" class="raised emby-button">Load categories</button>
+                            <button is="emby-button" type="button" id="xp-cat-include" class="emby-button">Include shown</button>
+                            <button is="emby-button" type="button" id="xp-cat-exclude" class="emby-button">Exclude shown</button>
+                        </div>
+                        <div class="inputContainer">
+                            <label class="inputLabel" for="xp-cat-search">Search categories</label>
+                            <input is="emby-input" id="xp-cat-search" type="search" />
+                        </div>
+                        <p id="xp-cat-message" role="status" aria-live="polite" class="xp-muted"></p>
+                        <table aria-label="Categories">
+                            <thead><tr><th scope="col">Include</th><th scope="col">Category</th><th scope="col">Rename</th><th scope="col">Order</th></tr></thead>
+                            <tbody id="xp-cat-rows"></tbody>
+                        </table>
+                    </section>
+
+                    <section id="xp-panel-titles" role="tabpanel" aria-labelledby="xp-tab-titles" hidden>
+                        <div class="inputContainer">
+                            <label class="inputLabel" for="xp-title-rules">Cleanup rules (one regular expression per line)</label>
+                            <textarea is="emby-textarea" id="xp-title-rules" rows="5"></textarea>
+                            <div class="fieldDescription">Matches are removed from VOD and series titles, in order. A trailing year such as (2020) is always picked up.</div>
+                        </div>
+                        <div class="inputContainer">
+                            <label class="inputLabel" for="xp-title-samples">Sample titles</label>
+                            <textarea is="emby-textarea" id="xp-title-samples" rows="4">EN | Fake Movie (2020)
+4K - Another Fake
+|UK| Some Show - 2019</textarea>
+                        </div>
+                        <button is="emby-button" type="button" id="xp-title-defaults" class="emby-button">Reset to defaults</button>
+                        <table aria-label="Title preview">
+                            <thead><tr><th scope="col">Provider title</th><th scope="col">Clean title</th><th scope="col">Year</th></tr></thead>
+                            <tbody id="xp-title-preview" aria-live="polite"></tbody>
+                        </table>
+                    </section>
+
+                    <section id="xp-panel-status" role="tabpanel" aria-labelledby="xp-tab-status" hidden>
+                        <button is="emby-button" type="button" id="xp-status-refresh" class="emby-button">Refresh</button>
+                        <table aria-label="Sync status">
+                            <thead><tr><th scope="col">Task</th><th scope="col">Last run</th><th scope="col">Result</th><th scope="col">Added</th><th scope="col">Updated</th><th scope="col">Removed</th><th scope="col"><span class="xp-muted">Action</span></th></tr></thead>
+                            <tbody id="xp-status-rows"></tbody>
+                        </table>
+                    </section>
+
+                    <section id="xp-panel-guide" role="tabpanel" aria-labelledby="xp-tab-guide" hidden>
+                        <button is="emby-button" type="button" id="xp-guide-refresh" class="emby-button">Refresh</button>
+                        <div id="xp-guide" aria-live="polite"></div>
+                    </section>
+
+                    <div class="verticalSection">
+                        <button is="emby-button" type="submit" class="raised button-submit block emby-button"><span>Save</span></button>
+                    </div>
+                </form>
             </div>
         </div>
+        <script type="text/javascript">
+            (function () {
+                const pluginId = 'd7920906-a306-4216-911b-39474ca7596d';
+                const defaultRules = [
+                    '^\\s*\\|?[A-Z]{2,3}\\|?\\s*[|:\\-]\\s*',
+                    '^\\s*(4K|UHD|FHD|HD|SD)\\s*[|:\\-]\\s*',
+                    '\\b(2160p|1080p|720p|480p|HEVC|x265|x264|H\\.?264|H\\.?265|UHD|4K|HDR10?|10bit|MULTI)\\b'
+                ];
+                const ruleKeys = { live: 'LiveCategories', vod: 'VodCategories', series: 'SeriesCategories' };
+                const page = document.querySelector('#XtreamProConfigPage');
+                const $ = (selector) => page.querySelector(selector);
+                let config = null;
+                let categories = [];
+                let previewTimer = null;
+
+                function el(tag, props, ...children) {
+                    const node = document.createElement(tag);
+                    Object.entries(props || {}).forEach(([key, value]) => {
+                        if (key === 'is') {
+                            node.setAttribute('is', value);
+                        } else if (key in node) {
+                            node[key] = value;
+                        } else {
+                            node.setAttribute(key, value);
+                        }
+                    });
+                    children.flat().forEach((child) => node.append(child));
+                    return node;
+                }
+
+                function api(method, path, body) {
+                    return ApiClient.ajax({
+                        type: method,
+                        url: ApiClient.getUrl(path),
+                        data: body === undefined ? undefined : JSON.stringify(body),
+                        contentType: 'application/json',
+                        dataType: 'json'
+                    });
+                }
+
+                function newProvider() {
+                    return {
+                        Id: crypto.randomUUID(), Name: '', Url: '', Username: '', Password: '', UserAgent: 'VLC/3.0.21 LibVLC/3.0.21',
+                        EnableLiveTv: true, EnableVod: true, EnableSeries: true, EnableCatchUp: true, SkipAdultCategories: true,
+                        CategoryCollections: false, LiveFormat: 'Ts', PreferDirectPlay: true, EpgOffsetMinutes: 0,
+                        LiveCategories: [], VodCategories: [], SeriesCategories: [], ChannelNumbers: [], EpgOverrides: []
+                    };
+                }
+
+                function field(provider, key, label, type, index) {
+                    const id = 'xp-p' + index + '-' + key;
+                    const input = el('input', { is: 'emby-input', id, type, value: provider[key] ?? '', autocomplete: type === 'password' ? 'current-password' : 'off' });
+                    input.addEventListener('input', () => {
+                        provider[key] = type === 'number' ? Number(input.value) : input.value;
+                    });
+                    return el('div', { className: 'inputContainer' }, el('label', { className: 'inputLabel', htmlFor: id }, label), input);
+                }
+
+                function toggle(provider, key, label, index) {
+                    const input = el('input', { is: 'emby-checkbox', type: 'checkbox', id: 'xp-p' + index + '-' + key, checked: !!provider[key] });
+                    input.addEventListener('change', () => { provider[key] = input.checked; });
+                    return el('div', { className: 'checkboxContainer' }, el('label', {}, input, el('span', {}, label)));
+                }
+
+                function renderProviders() {
+                    const list = $('#xp-providers');
+                    list.replaceChildren(...config.Providers.map((provider, index) => {
+                        const result = el('p', { role: 'status', 'aria-live': 'polite' });
+                        const format = el('select', { is: 'emby-select', id: 'xp-p' + index + '-LiveFormat' },
+                            el('option', { value: 'Ts', textContent: 'MPEG-TS' }), el('option', { value: 'Hls', textContent: 'HLS' }));
+                        format.value = provider.LiveFormat;
+                        format.addEventListener('change', () => { provider.LiveFormat = format.value; });
+                        const test = el('button', { is: 'emby-button', type: 'button', className: 'raised emby-button', textContent: 'Test connection' });
+                        test.addEventListener('click', () => testConnection(provider, result));
+                        const remove = el('button', { is: 'emby-button', type: 'button', className: 'emby-button', textContent: 'Remove provider' });
+                        remove.addEventListener('click', () => {
+                            config.Providers.splice(index, 1);
+                            renderProviders();
+                        });
+                        return el('div', { className: 'xp-card', role: 'group', 'aria-label': provider.Name || 'Provider ' + (index + 1) },
+                            el('div', { className: 'xp-grid' },
+                                field(provider, 'Name', 'Name', 'text', index),
+                                field(provider, 'Url', 'Server URL', 'url', index),
+                                field(provider, 'Username', 'Username', 'text', index),
+                                field(provider, 'Password', 'Password', 'password', index),
+                                field(provider, 'UserAgent', 'User-Agent', 'text', index),
+                                field(provider, 'EpgOffsetMinutes', 'Guide time offset (minutes)', 'number', index),
+                                el('div', { className: 'selectContainer' }, el('label', { className: 'selectLabel', htmlFor: format.id }, 'Live stream format'), format)),
+                            el('div', { className: 'xp-grid' },
+                                toggle(provider, 'EnableLiveTv', 'Live TV', index),
+                                toggle(provider, 'PreferDirectPlay', 'Prefer direct play for live TV', index),
+                                toggle(provider, 'EnableVod', 'Sync movies', index),
+                                toggle(provider, 'EnableSeries', 'Sync series', index),
+                                toggle(provider, 'EnableCatchUp', 'Catch-up', index),
+                                toggle(provider, 'SkipAdultCategories', 'Skip adult categories', index),
+                                toggle(provider, 'CategoryCollections', 'Collection per movie category', index)),
+                            el('div', { className: 'xp-row' }, test, remove),
+                            result);
+                    }));
+                    renderProviderSelect();
+                }
+
+                async function testConnection(provider, target) {
+                    target.className = 'xp-muted';
+                    target.textContent = 'Testing...';
+                    try {
+                        const r = await api('POST', 'XtreamPro/Test', provider);
+                        if (r.Ok) {
+                            const expiry = r.ExpiresAt ? new Date(r.ExpiresAt).toLocaleDateString() : 'never';
+                            target.className = 'xp-ok';
+                            target.textContent = r.Status + (r.IsTrial ? ' (trial)' : '') + '. Expires ' + expiry + '. Connections: ' + (r.ActiveConnections ?? '?') + ' in use of ' + (r.MaxConnections ?? 'unlimited') + ', ' + r.ServerConnections + ' from this server.';
+                        } else {
+                            target.className = 'xp-error';
+                            target.textContent = 'Connection failed: ' + r.Error;
+                        }
+                    } catch (e) {
+                        target.className = 'xp-error';
+                        target.textContent = 'Connection failed.';
+                    }
+                }
+
+                function renderProviderSelect() {
+                    const select = $('#xp-cat-provider');
+                    const current = select.value;
+                    select.replaceChildren(...config.Providers.map((p, i) => el('option', { value: String(i), textContent: p.Name || p.Url || 'Provider ' + (i + 1) })));
+                    if (current && Number(current) < config.Providers.length) {
+                        select.value = current;
+                    }
+                }
+
+                function selectedRules() {
+                    const provider = config.Providers[Number($('#xp-cat-provider').value)];
+                    return provider ? provider[ruleKeys[$('#xp-cat-type').value]] : null;
+                }
+
+                function ruleFor(rules, id) {
+                    let rule = rules.find((r) => r.CategoryId === id);
+                    if (!rule) {
+                        rule = { CategoryId: id, Excluded: false, Rename: null, Order: null };
+                        rules.push(rule);
+                    }
+
+                    return rule;
+                }
+
+                function visibleCategories() {
+                    const term = $('#xp-cat-search').value.trim().toLowerCase();
+                    return categories.filter((c) => !term || c.Name.toLowerCase().includes(term));
+                }
+
+                function orderedCategories(rules) {
+                    const order = (c) => rules.find((r) => r.CategoryId === c.Id)?.Order ?? Number.MAX_SAFE_INTEGER;
+                    return [...categories].sort((a, b) => order(a) - order(b) || categories.indexOf(a) - categories.indexOf(b));
+                }
+
+                function move(rules, category, delta) {
+                    const ordered = orderedCategories(rules);
+                    const from = ordered.indexOf(category);
+                    const to = from + delta;
+                    if (to < 0 || to >= ordered.length) {
+                        return;
+                    }
+
+                    ordered.splice(to, 0, ordered.splice(from, 1)[0]);
+                    ordered.forEach((c, i) => { ruleFor(rules, c.Id).Order = i; });
+                    renderCategories();
+                }
+
+                function renderCategories() {
+                    const rules = selectedRules();
+                    if (!rules) {
+                        $('#xp-cat-rows').replaceChildren();
+                        return;
+                    }
+
+                    const visible = new Set(visibleCategories());
+                    $('#xp-cat-rows').replaceChildren(...orderedCategories(rules).filter((c) => visible.has(c)).map((category) => {
+                        const rule = rules.find((r) => r.CategoryId === category.Id);
+                        const include = el('input', { is: 'emby-checkbox', type: 'checkbox', checked: !rule?.Excluded, 'aria-label': 'Include ' + category.Name });
+                        include.addEventListener('change', () => { ruleFor(rules, category.Id).Excluded = !include.checked; });
+                        const rename = el('input', { is: 'emby-input', type: 'text', value: rule?.Rename ?? '', placeholder: category.Name, 'aria-label': 'Rename ' + category.Name });
+                        rename.addEventListener('input', () => { ruleFor(rules, category.Id).Rename = rename.value || null; });
+                        const up = el('button', { is: 'emby-button', type: 'button', className: 'emby-button', textContent: 'Up', 'aria-label': 'Move ' + category.Name + ' up' });
+                        up.addEventListener('click', () => move(rules, category, -1));
+                        const down = el('button', { is: 'emby-button', type: 'button', className: 'emby-button', textContent: 'Down', 'aria-label': 'Move ' + category.Name + ' down' });
+                        down.addEventListener('click', () => move(rules, category, 1));
+                        return el('tr', {},
+                            el('td', {}, el('label', {}, include)),
+                            el('td', {}, category.Name),
+                            el('td', {}, rename),
+                            el('td', {}, el('div', { className: 'xp-row' }, up, down)));
+                    }));
+                }
+
+                async function loadCategories() {
+                    const provider = config.Providers[Number($('#xp-cat-provider').value)];
+                    const message = $('#xp-cat-message');
+                    if (!provider) {
+                        message.textContent = 'Add a provider first.';
+                        return;
+                    }
+
+                    message.textContent = 'Loading...';
+                    try {
+                        categories = await api('POST', 'XtreamPro/Categories/' + ($('#xp-cat-type').value), provider);
+                        message.textContent = categories.length + ' categories.';
+                    } catch (e) {
+                        categories = [];
+                        message.textContent = 'Could not load categories.';
+                    }
+
+                    renderCategories();
+                }
+
+                function setVisible(excluded) {
+                    const rules = selectedRules();
+                    if (rules) {
+                        visibleCategories().forEach((c) => { ruleFor(rules, c.Id).Excluded = excluded; });
+                        renderCategories();
+                    }
+                }
+
+                async function preview() {
+                    const titles = $('#xp-title-samples').value.split('\n').map((t) => t.trim()).filter(Boolean);
+                    const rules = $('#xp-title-rules').value.split('\n').filter((r) => r.trim());
+                    const rows = await api('POST', 'XtreamPro/TitlePreview', { Rules: rules, Titles: titles });
+                    $('#xp-title-preview').replaceChildren(...rows.map((r) => el('tr', {}, el('td', {}, r.Raw), el('td', {}, r.Title), el('td', {}, r.Year ? String(r.Year) : ''))));
+                }
+
+                function schedulePreview() {
+                    clearTimeout(previewTimer);
+                    previewTimer = setTimeout(preview, 250);
+                }
+
+                async function loadStatus() {
+                    const tasks = await api('GET', 'XtreamPro/Status');
+                    $('#xp-status-rows').replaceChildren(...tasks.map((t) => {
+                        const run = el('button', { is: 'emby-button', type: 'button', className: 'emby-button', textContent: 'Run now', 'aria-label': 'Run ' + t.Name + ' now', disabled: t.State !== 'Idle' });
+                        run.addEventListener('click', async () => {
+                            await ApiClient.startScheduledTask(t.Id);
+                            setTimeout(loadStatus, 1000);
+                        });
+                        const report = t.Report || {};
+                        return el('tr', {},
+                            el('td', {}, t.Name),
+                            el('td', {}, t.LastRun ? new Date(t.LastRun).toLocaleString() : 'Never'),
+                            el('td', {}, t.State === 'Idle' ? (t.LastResult ? t.LastResult + (t.Error ? ': ' + t.Error : '') : '') : t.State),
+                            el('td', {}, report.Added ?? ''),
+                            el('td', {}, report.Updated ?? ''),
+                            el('td', {}, report.Removed ?? ''),
+                            el('td', {}, run));
+                    }));
+                }
+
+                async function loadGuide() {
+                    const health = await api('GET', 'XtreamPro/GuideHealth');
+                    $('#xp-guide').replaceChildren(...health.map((h) => {
+                        const provider = config.Providers.find((p) => p.Id === h.ProviderId);
+                        const rows = h.Missing.map((m) => {
+                            const existing = provider?.EpgOverrides.find((o) => o.StreamId === m.StreamId);
+                            const input = el('input', { is: 'emby-input', type: 'text', value: existing?.EpgChannelId ?? '', placeholder: m.EpgChannelId ?? 'no guide id', 'aria-label': 'Guide id for ' + m.Name });
+                            input.addEventListener('input', () => {
+                                if (!provider) {
+                                    return;
+                                }
+
+                                provider.EpgOverrides = provider.EpgOverrides.filter((o) => o.StreamId !== m.StreamId);
+                                if (input.value.trim()) {
+                                    provider.EpgOverrides.push({ StreamId: m.StreamId, EpgChannelId: input.value.trim() });
+                                }
+                            });
+                            return el('tr', {}, el('td', {}, m.Name ?? String(m.StreamId)), el('td', {}, input));
+                        });
+                        return el('div', { className: 'xp-card' },
+                            el('h3', {}, h.Provider),
+                            el('p', {}, (h.Channels - h.Missing.length) + ' of ' + h.Channels + ' channels have guide data.'),
+                            rows.length ? el('table', { 'aria-label': 'Channels without guide data for ' + h.Provider },
+                                el('thead', {}, el('tr', {}, el('th', { scope: 'col' }, 'Channel'), el('th', { scope: 'col' }, 'Guide id override'))),
+                                el('tbody', {}, rows)) : '');
+                    }));
+                }
+
+                function selectTab(tab) {
+                    page.querySelectorAll('[role="tab"]').forEach((t) => {
+                        const selected = t === tab;
+                        t.setAttribute('aria-selected', String(selected));
+                        t.tabIndex = selected ? 0 : -1;
+                        $('#' + t.getAttribute('aria-controls')).hidden = !selected;
+                    });
+                    if (tab.id === 'xp-tab-status') {
+                        loadStatus();
+                    } else if (tab.id === 'xp-tab-guide') {
+                        loadGuide();
+                    } else if (tab.id === 'xp-tab-titles') {
+                        preview();
+                    }
+                }
+
+                const tabs = [...page.querySelectorAll('[role="tab"]')];
+                tabs.forEach((tab, index) => {
+                    tab.addEventListener('click', () => selectTab(tab));
+                    tab.addEventListener('keydown', (e) => {
+                        const next = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+                        if (next) {
+                            const target = tabs[(index + next + tabs.length) % tabs.length];
+                            target.focus();
+                            selectTab(target);
+                        }
+                    });
+                });
+
+                $('#xp-add-provider').addEventListener('click', () => {
+                    config.Providers.push(newProvider());
+                    renderProviders();
+                });
+                $('#xp-cat-load').addEventListener('click', loadCategories);
+                $('#xp-cat-type').addEventListener('change', () => { categories = []; renderCategories(); });
+                $('#xp-cat-provider').addEventListener('change', () => { categories = []; renderCategories(); });
+                $('#xp-cat-search').addEventListener('input', renderCategories);
+                $('#xp-cat-include').addEventListener('click', () => setVisible(false));
+                $('#xp-cat-exclude').addEventListener('click', () => setVisible(true));
+                $('#xp-title-rules').addEventListener('input', schedulePreview);
+                $('#xp-title-samples').addEventListener('input', schedulePreview);
+                $('#xp-title-defaults').addEventListener('click', () => {
+                    $('#xp-title-rules').value = defaultRules.join('\n');
+                    preview();
+                });
+                $('#xp-status-refresh').addEventListener('click', loadStatus);
+                $('#xp-guide-refresh').addEventListener('click', loadGuide);
+
+                page.addEventListener('pageshow', async () => {
+                    Dashboard.showLoadingMsg();
+                    config = await ApiClient.getPluginConfiguration(pluginId);
+                    page.querySelectorAll('[data-config]').forEach((input) => { input.value = config[input.dataset.config] ?? ''; });
+                    $('#xp-title-rules').value = (config.TitleRules || []).join('\n');
+                    renderProviders();
+                    Dashboard.hideLoadingMsg();
+                });
+
+                $('#XtreamProForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    Dashboard.showLoadingMsg();
+                    page.querySelectorAll('[data-config]').forEach((input) => {
+                        config[input.dataset.config] = input.type === 'number' ? Number(input.value) : input.value;
+                    });
+                    config.TitleRules = $('#xp-title-rules').value.split('\n').filter((r) => r.trim());
+                    const result = await ApiClient.updatePluginConfiguration(pluginId, config);
+                    Dashboard.processPluginConfigurationUpdateResult(result);
+                    renderProviderSelect();
+                    return false;
+                });
+            })();
+        </script>
     </div>
 </body>
 </html>

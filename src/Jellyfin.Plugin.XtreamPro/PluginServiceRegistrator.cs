@@ -7,6 +7,7 @@ using Jellyfin.Plugin.XtreamPro.CatchUp;
 using Jellyfin.Plugin.XtreamPro.Configuration;
 using Jellyfin.Plugin.XtreamPro.LiveTv;
 using Jellyfin.Plugin.XtreamPro.Sync;
+using Jellyfin.Plugin.XtreamPro.Tasks;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.LiveTv;
@@ -49,6 +50,7 @@ public class PluginServiceRegistrator : IPluginServiceRegistrator
             () => applicationHost.GetApiUrlForLocalAccess(),
             sp.GetRequiredService<TimeProvider>(),
             sp.GetRequiredService<ILogger<LibrarySync>>()));
+        serviceCollection.AddSingleton(sp => new SyncStatusStore(Path.Combine(DataDirectory(sp), "status.json")));
         serviceCollection.AddSingleton(sp => new CatchUpSync(
             sp.GetRequiredService<IXtreamSettings>(),
             sp.GetRequiredService<LiveCatalog>(),
