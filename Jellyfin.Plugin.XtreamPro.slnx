@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Jellyfin.Plugin.XtreamPro/Jellyfin.Plugin.XtreamPro.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/XtreamPro.IntegrationTests/XtreamPro.IntegrationTests.csproj" />
+    <Project Path="tests/XtreamPro.UnitTests/XtreamPro.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/FakeXtreamServer/FakeXtreamServer.csproj" />
+  </Folder>
+</Solution>
