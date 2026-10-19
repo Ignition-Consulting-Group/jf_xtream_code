@@ -1,5 +1,13 @@
 # Progress
 
+## Phase 5 - Config dashboard (done)
+
+- Tabbed dashboard page ([ADR 0007](adr/0007-config-dashboard.md)): multiple provider profiles with test connection (status, expiry, connection usage), libraries and stream URL, category manager (search, bulk include or exclude, rename, reorder per Live, VOD and Series), title cleanup rules with live preview, sync status with "Run now", guide health with guide id overrides.
+- Admin API under `/XtreamPro` for the page.
+- Sync tasks record their last report for the status tab.
+- Category order and guide id overrides now apply to live channels.
+- Playwright UI tests against Jellyfin 12.2 cover every tab, keyboard tab navigation and both colour schemes.
+
 ## Phase 4 - Catch-up (done)
 
 - Archive channels become a rolling Catch-up TV library, one show per channel and one episode per finished programme ([ADR 0006](adr/0006-catch-up-as-a-rolling-tv-library.md)).
@@ -54,4 +62,3 @@
 ### Not done from here
 
 - Branch protection and the GitHub Projects board need to be set up in the GitHub UI.
-- The UI test project (Playwright) is added in Phase 5 when there is UI to test.

@@ -33,6 +33,7 @@ dotnet tool restore && dotnet husky install   # pre-commit hook: format + unit t
 make test        # unit tests
 make coverage    # unit tests with coverage
 make test-int    # integration tests, including a real Jellyfin container
+make test-ui     # Playwright tests of the settings page (run playwright.ps1 install chromium once)
 make dev-up      # Jellyfin on :8096 with the plugin, FakeXtreamServer on :8080
 make dev-reload  # rebuild the plugin, restart Jellyfin, tail logs
 ```
