@@ -1,4 +1,6 @@
 using System;
+using System.Collections.ObjectModel;
+using Jellyfin.Plugin.XtreamPro.Api;
 
 namespace Jellyfin.Plugin.XtreamPro.Configuration;
 
@@ -29,4 +31,22 @@ public class ProviderProfile
 
     /// <summary>Gets or sets the User-Agent sent to this provider.</summary>
     public string UserAgent { get; set; } = DefaultUserAgent;
+
+    /// <summary>Gets or sets a value indicating whether live channels from this provider are shown.</summary>
+    public bool EnableLiveTv { get; set; } = true;
+
+    /// <summary>Gets or sets the live stream container.</summary>
+    public LiveFormat LiveFormat { get; set; } = LiveFormat.Ts;
+
+    /// <summary>Gets or sets a value indicating whether clients may play live streams directly from the provider.</summary>
+    public bool PreferDirectPlay { get; set; } = true;
+
+    /// <summary>Gets or sets a correction applied to guide times, in minutes.</summary>
+    public int EpgOffsetMinutes { get; set; }
+
+    /// <summary>Gets or sets the live category rules.</summary>
+    public Collection<CategoryRule> LiveCategories { get; set; } = [];
+
+    /// <summary>Gets or sets the channel number overrides.</summary>
+    public Collection<ChannelNumberOverride> ChannelNumbers { get; set; } = [];
 }

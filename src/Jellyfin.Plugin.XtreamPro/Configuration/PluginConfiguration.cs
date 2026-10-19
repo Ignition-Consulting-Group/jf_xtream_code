@@ -8,6 +8,6 @@ namespace Jellyfin.Plugin.XtreamPro.Configuration;
 /// </summary>
 public class PluginConfiguration : BasePluginConfiguration
 {
-    /// <summary>Gets the configured provider accounts.</summary>
-    public Collection<ProviderProfile> Providers { get; } = [];
+    /// <summary>Gets or sets the configured provider accounts.</summary>
+    public Collection<ProviderProfile> Providers { get; set; } = [];
 }
