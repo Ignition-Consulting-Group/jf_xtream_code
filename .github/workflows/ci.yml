@@ -21,7 +21,7 @@ jobs:
       - run: dotnet build Jellyfin.Plugin.XtreamPro.slnx -c Release
       - run: make coverage
       - run: dotnet test --project tests/XtreamPro.IntegrationTests -c Release --filter-not-trait "Category=Container"
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage
