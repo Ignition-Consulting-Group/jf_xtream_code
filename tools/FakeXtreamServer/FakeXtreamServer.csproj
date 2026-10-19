@@ -4,4 +4,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="Media\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
