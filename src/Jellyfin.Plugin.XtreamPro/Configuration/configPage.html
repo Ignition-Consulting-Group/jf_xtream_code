@@ -27,17 +27,17 @@
                     </div>
 
                     <div class="xp-tabs" role="tablist" aria-label="Xtream Pro settings">
-                        <button is="emby-button" type="button" class="emby-button" role="tab" id="xp-tab-providers" aria-controls="xp-panel-providers" aria-selected="true">Providers</button>
-                        <button is="emby-button" type="button" class="emby-button" role="tab" id="xp-tab-libraries" aria-controls="xp-panel-libraries" aria-selected="false">Libraries</button>
-                        <button is="emby-button" type="button" class="emby-button" role="tab" id="xp-tab-categories" aria-controls="xp-panel-categories" aria-selected="false">Categories</button>
-                        <button is="emby-button" type="button" class="emby-button" role="tab" id="xp-tab-titles" aria-controls="xp-panel-titles" aria-selected="false">Title cleanup</button>
-                        <button is="emby-button" type="button" class="emby-button" role="tab" id="xp-tab-status" aria-controls="xp-panel-status" aria-selected="false">Sync status</button>
-                        <button is="emby-button" type="button" class="emby-button" role="tab" id="xp-tab-guide" aria-controls="xp-panel-guide" aria-selected="false">Guide health</button>
+                        <button is="emby-button" type="button" class="raised emby-button" role="tab" id="xp-tab-providers" aria-controls="xp-panel-providers" aria-selected="true">Providers</button>
+                        <button is="emby-button" type="button" class="raised emby-button" role="tab" id="xp-tab-libraries" aria-controls="xp-panel-libraries" aria-selected="false">Libraries</button>
+                        <button is="emby-button" type="button" class="raised emby-button" role="tab" id="xp-tab-categories" aria-controls="xp-panel-categories" aria-selected="false">Categories</button>
+                        <button is="emby-button" type="button" class="raised emby-button" role="tab" id="xp-tab-titles" aria-controls="xp-panel-titles" aria-selected="false">Title cleanup</button>
+                        <button is="emby-button" type="button" class="raised emby-button" role="tab" id="xp-tab-status" aria-controls="xp-panel-status" aria-selected="false">Sync status</button>
+                        <button is="emby-button" type="button" class="raised emby-button" role="tab" id="xp-tab-guide" aria-controls="xp-panel-guide" aria-selected="false">Guide health</button>
                     </div>
 
                     <section id="xp-panel-providers" role="tabpanel" aria-labelledby="xp-tab-providers">
                         <div id="xp-providers"></div>
-                        <button is="emby-button" type="button" id="xp-add-provider" class="raised emby-button">Add provider</button>
+                        <button is="emby-button" type="button" id="xp-add-provider" class="raised emby-button" disabled>Add provider</button>
                     </section>
 
                     <section id="xp-panel-libraries" role="tabpanel" aria-labelledby="xp-tab-libraries" hidden>
@@ -60,6 +60,14 @@
                             <label class="inputLabel" for="xp-stream-base">Stream base URL</label>
                             <input is="emby-input" id="xp-stream-base" type="url" data-config="StreamBaseUrl" placeholder="http://192.168.1.10:8096" />
                             <div class="fieldDescription">Jellyfin address written into .strm files. Clients must be able to reach it. Leave empty to use the server's local address.</div>
+                        </div>
+                        <div class="checkboxContainer checkboxContainer-withDescription">
+                            <label>
+                                <input is="emby-checkbox" type="checkbox" id="xp-enhanced" />
+                                <span>Enhanced Live TV page</span>
+                            </label>
+                            <div class="fieldDescription">A channel browser with preview, guide and zapping at <a href="/XtreamPro/Web/" target="_blank" rel="noopener">/XtreamPro/Web/</a>. With the File Transformation plugin installed it is also linked from the web client menu. Takes effect after a restart.</div>
+                            <p id="xp-enhanced-status" role="status" aria-live="polite" class="xp-muted"></p>
                         </div>
                         <div class="inputContainer">
                             <label class="inputLabel" for="xp-series-refresh">Series refresh window (days)</label>
@@ -85,8 +93,8 @@
                         </div>
                         <div class="xp-row">
                             <button is="emby-button" type="button" id="xp-cat-load" class="raised emby-button">Load categories</button>
-                            <button is="emby-button" type="button" id="xp-cat-include" class="emby-button">Include shown</button>
-                            <button is="emby-button" type="button" id="xp-cat-exclude" class="emby-button">Exclude shown</button>
+                            <button is="emby-button" type="button" id="xp-cat-include" class="raised emby-button">Include shown</button>
+                            <button is="emby-button" type="button" id="xp-cat-exclude" class="raised emby-button">Exclude shown</button>
                         </div>
                         <div class="inputContainer">
                             <label class="inputLabel" for="xp-cat-search">Search categories</label>
@@ -111,7 +119,7 @@
 4K - Another Fake
 |UK| Some Show - 2019</textarea>
                         </div>
-                        <button is="emby-button" type="button" id="xp-title-defaults" class="emby-button">Reset to defaults</button>
+                        <button is="emby-button" type="button" id="xp-title-defaults" class="raised emby-button">Reset to defaults</button>
                         <table aria-label="Title preview">
                             <thead><tr><th scope="col">Provider title</th><th scope="col">Clean title</th><th scope="col">Year</th></tr></thead>
                             <tbody id="xp-title-preview" aria-live="polite"></tbody>
@@ -119,7 +127,7 @@
                     </section>
 
                     <section id="xp-panel-status" role="tabpanel" aria-labelledby="xp-tab-status" hidden>
-                        <button is="emby-button" type="button" id="xp-status-refresh" class="emby-button">Refresh</button>
+                        <button is="emby-button" type="button" id="xp-status-refresh" class="raised emby-button">Refresh</button>
                         <table aria-label="Sync status">
                             <thead><tr><th scope="col">Task</th><th scope="col">Last run</th><th scope="col">Result</th><th scope="col">Added</th><th scope="col">Updated</th><th scope="col">Removed</th><th scope="col"><span class="xp-muted">Action</span></th></tr></thead>
                             <tbody id="xp-status-rows"></tbody>
@@ -127,7 +135,7 @@
                     </section>
 
                     <section id="xp-panel-guide" role="tabpanel" aria-labelledby="xp-tab-guide" hidden>
-                        <button is="emby-button" type="button" id="xp-guide-refresh" class="emby-button">Refresh</button>
+                        <button is="emby-button" type="button" id="xp-guide-refresh" class="raised emby-button">Refresh</button>
                         <div id="xp-guide" aria-live="polite"></div>
                     </section>
 
@@ -211,7 +219,7 @@
                         format.addEventListener('change', () => { provider.LiveFormat = format.value; });
                         const test = el('button', { is: 'emby-button', type: 'button', className: 'raised emby-button', textContent: 'Test connection' });
                         test.addEventListener('click', () => testConnection(provider, result));
-                        const remove = el('button', { is: 'emby-button', type: 'button', className: 'emby-button', textContent: 'Remove provider' });
+                        const remove = el('button', { is: 'emby-button', type: 'button', className: 'raised emby-button', textContent: 'Remove provider' });
                         remove.addEventListener('click', () => {
                             config.Providers.splice(index, 1);
                             renderProviders();
@@ -315,13 +323,13 @@
                     const visible = new Set(visibleCategories());
                     $('#xp-cat-rows').replaceChildren(...orderedCategories(rules).filter((c) => visible.has(c)).map((category) => {
                         const rule = rules.find((r) => r.CategoryId === category.Id);
-                        const include = el('input', { is: 'emby-checkbox', type: 'checkbox', checked: !rule?.Excluded, 'aria-label': 'Include ' + category.Name });
+                        const include = el('input', { type: 'checkbox', checked: !rule?.Excluded, 'aria-label': 'Include ' + category.Name });
                         include.addEventListener('change', () => { ruleFor(rules, category.Id).Excluded = !include.checked; });
-                        const rename = el('input', { is: 'emby-input', type: 'text', value: rule?.Rename ?? '', placeholder: category.Name, 'aria-label': 'Rename ' + category.Name });
+                        const rename = el('input', { is: 'emby-input', className: 'emby-input', type: 'text', value: rule?.Rename ?? '', placeholder: category.Name, 'aria-label': 'Rename ' + category.Name });
                         rename.addEventListener('input', () => { ruleFor(rules, category.Id).Rename = rename.value || null; });
-                        const up = el('button', { is: 'emby-button', type: 'button', className: 'emby-button', textContent: 'Up', 'aria-label': 'Move ' + category.Name + ' up' });
+                        const up = el('button', { is: 'emby-button', type: 'button', className: 'raised emby-button', textContent: 'Up', 'aria-label': 'Move ' + category.Name + ' up' });
                         up.addEventListener('click', () => move(rules, category, -1));
-                        const down = el('button', { is: 'emby-button', type: 'button', className: 'emby-button', textContent: 'Down', 'aria-label': 'Move ' + category.Name + ' down' });
+                        const down = el('button', { is: 'emby-button', type: 'button', className: 'raised emby-button', textContent: 'Down', 'aria-label': 'Move ' + category.Name + ' down' });
                         down.addEventListener('click', () => move(rules, category, 1));
                         return el('tr', {},
                             el('td', {}, el('label', {}, include)),
@@ -374,7 +382,7 @@
                 async function loadStatus() {
                     const tasks = await api('GET', 'XtreamPro/Status');
                     $('#xp-status-rows').replaceChildren(...tasks.map((t) => {
-                        const run = el('button', { is: 'emby-button', type: 'button', className: 'emby-button', textContent: 'Run now', 'aria-label': 'Run ' + t.Name + ' now', disabled: t.State !== 'Idle' });
+                        const run = el('button', { is: 'emby-button', type: 'button', className: 'raised emby-button', textContent: 'Run now', 'aria-label': 'Run ' + t.Name + ' now', disabled: t.State !== 'Idle' });
                         run.addEventListener('click', async () => {
                             await ApiClient.startScheduledTask(t.Id);
                             setTimeout(loadStatus, 1000);
@@ -397,7 +405,7 @@
                         const provider = config.Providers.find((p) => p.Id === h.ProviderId);
                         const rows = h.Missing.map((m) => {
                             const existing = provider?.EpgOverrides.find((o) => o.StreamId === m.StreamId);
-                            const input = el('input', { is: 'emby-input', type: 'text', value: existing?.EpgChannelId ?? '', placeholder: m.EpgChannelId ?? 'no guide id', 'aria-label': 'Guide id for ' + m.Name });
+                            const input = el('input', { is: 'emby-input', className: 'emby-input', type: 'text', value: existing?.EpgChannelId ?? '', placeholder: m.EpgChannelId ?? 'no guide id', 'aria-label': 'Guide id for ' + m.Name });
                             input.addEventListener('input', () => {
                                 if (!provider) {
                                     return;
@@ -472,7 +480,10 @@
                     config = await ApiClient.getPluginConfiguration(pluginId);
                     page.querySelectorAll('[data-config]').forEach((input) => { input.value = config[input.dataset.config] ?? ''; });
                     $('#xp-title-rules').value = (config.TitleRules || []).join('\n');
+                    $('#xp-enhanced').checked = !!config.EnableEnhancedLiveTv;
+                    api('GET', 'XtreamPro/EnhancedUi').then((s) => { $('#xp-enhanced-status').textContent = s.Message || ''; }).catch(() => {});
                     renderProviders();
+                    $('#xp-add-provider').disabled = false;
                     Dashboard.hideLoadingMsg();
                 });
 
@@ -483,6 +494,7 @@
                         config[input.dataset.config] = input.type === 'number' ? Number(input.value) : input.value;
                     });
                     config.TitleRules = $('#xp-title-rules').value.split('\n').filter((r) => r.trim());
+                    config.EnableEnhancedLiveTv = $('#xp-enhanced').checked;
                     const result = await ApiClient.updatePluginConfiguration(pluginId, config);
                     Dashboard.processPluginConfigurationUpdateResult(result);
                     renderProviderSelect();

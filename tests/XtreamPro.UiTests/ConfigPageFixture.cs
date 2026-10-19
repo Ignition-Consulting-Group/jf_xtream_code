@@ -37,7 +37,7 @@ public sealed class ConfigPageFixture : IAsyncLifetime
     /// Saves one provider pointing at FakeXtreamServer, replacing any others.
     /// </summary>
     /// <returns>A task.</returns>
-    public async Task SaveFakeProviderAsync()
+    public async Task SaveFakeProviderAsync(bool enhancedLiveTv = false)
     {
         var ct = TestContext.Current.CancellationToken;
         var config = await Api.GetAsync($"/Plugins/{PluginId}/Configuration", ct);
@@ -49,6 +49,7 @@ public sealed class ConfigPageFixture : IAsyncLifetime
             ["Username"] = "demo",
             ["Password"] = "demo",
         });
+        config["EnableEnhancedLiveTv"] = enhancedLiveTv;
         await Api.PostAsync($"/Plugins/{PluginId}/Configuration", config, ct);
     }
 
@@ -58,6 +59,19 @@ public sealed class ConfigPageFixture : IAsyncLifetime
     /// <param name="colorScheme">Preferred colour scheme.</param>
     /// <returns>The page.</returns>
     public async Task<IPage> OpenConfigPageAsync(ColorScheme colorScheme = ColorScheme.Dark)
+    {
+        var page = await OpenAsync("/web/#/configurationpage?name=Xtream%20Pro", colorScheme);
+        await page.GetByRole(AriaRole.Tab, new() { Name = "Providers" }).WaitForAsync();
+        return page;
+    }
+
+    /// <summary>
+    /// Opens a page in a new browser context signed in as the admin user.
+    /// </summary>
+    /// <param name="path">Path on the Jellyfin server.</param>
+    /// <param name="colorScheme">Preferred colour scheme.</param>
+    /// <returns>The page.</returns>
+    public async Task<IPage> OpenAsync(string path, ColorScheme colorScheme = ColorScheme.Dark)
     {
         var context = await _browser!.NewContextAsync(new BrowserNewContextOptions { ColorScheme = colorScheme });
         var info = await Api.GetAsync("/System/Info/Public", TestContext.Current.CancellationToken);
@@ -80,8 +94,7 @@ public sealed class ConfigPageFixture : IAsyncLifetime
         await context.AddInitScriptAsync($"window.localStorage.setItem('jellyfin_credentials', {JsonSerializer.Serialize(credentials)});");
 
         var page = await context.NewPageAsync();
-        await page.GotoAsync(new Uri(Jellyfin.BaseAddress, "/web/#/configurationpage?name=Xtream%20Pro").ToString());
-        await page.GetByRole(AriaRole.Tab, new() { Name = "Providers" }).WaitForAsync();
+        await page.GotoAsync(new Uri(Jellyfin.BaseAddress, path).ToString());
         return page;
     }
 

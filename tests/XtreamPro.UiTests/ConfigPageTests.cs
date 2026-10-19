@@ -157,6 +157,19 @@ public partial class ConfigPageTests : IClassFixture<ConfigPageFixture>
         colours[0].ShouldBe(colours[1]);
     }
 
+    [Theory]
+    [InlineData(ColorScheme.Dark)]
+    [InlineData(ColorScheme.Light)]
+    public async Task Buttons_HaveReadableText(ColorScheme scheme)
+    {
+        var page = await _fixture.OpenConfigPageAsync(scheme);
+
+        var unreadable = await page.EvaluateAsync<string[]>(
+            "() => [...document.querySelectorAll('#XtreamProConfigPage button')].filter(b => b.offsetParent).map(b => [b, getComputedStyle(b)]).filter(([, s]) => s.color === s.backgroundColor).map(([b]) => b.textContent.trim())");
+
+        unreadable.ShouldBeEmpty();
+    }
+
     [GeneratedRegex(@"\d+ of 6 channels have guide data\.")]
     private static partial Regex GuideCoverage();
 }

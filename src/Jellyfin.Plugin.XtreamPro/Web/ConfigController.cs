@@ -35,6 +35,7 @@ public class ConfigController : ControllerBase
     private readonly GuideStore _guides;
     private readonly ITaskManager _tasks;
     private readonly SyncStatusStore _status;
+    private readonly EnhancedUiStatus _enhancedUi;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigController"/> class.
@@ -45,8 +46,10 @@ public class ConfigController : ControllerBase
     /// <param name="guides">Guide store.</param>
     /// <param name="tasks">Task manager.</param>
     /// <param name="status">Sync status store.</param>
-    public ConfigController(XtreamClientFactory clients, ConnectionTracker connections, LiveCatalog catalog, GuideStore guides, ITaskManager tasks, SyncStatusStore status)
+    /// <param name="enhancedUi">Enhanced Live TV link status.</param>
+    public ConfigController(XtreamClientFactory clients, ConnectionTracker connections, LiveCatalog catalog, GuideStore guides, ITaskManager tasks, SyncStatusStore status, EnhancedUiStatus enhancedUi)
     {
+        _enhancedUi = enhancedUi;
         _clients = clients;
         _connections = connections;
         _catalog = catalog;
@@ -152,6 +155,14 @@ public class ConfigController : ControllerBase
                 t.LastExecutionResult?.ErrorMessage,
                 _status.All.GetValueOrDefault(t.ScheduledTask.Key)?.Report))
             .ToList();
+
+    /// <summary>
+    /// Gets whether the web client links to the enhanced Live TV page.
+    /// </summary>
+    /// <returns>The link status.</returns>
+    [HttpGet("EnhancedUi")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public EnhancedUiStatus EnhancedUi() => _enhancedUi;
 
     /// <summary>
     /// Lists live channels without guide data, per provider.
