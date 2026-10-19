@@ -18,6 +18,9 @@ public class PluginConfiguration : BasePluginConfiguration
     /// <summary>Gets or sets the folder series are written to. Empty disables series sync.</summary>
     public string ShowsPath { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets the folder catch-up programmes are written to. Empty disables catch-up.</summary>
+    public string CatchUpPath { get; set; } = string.Empty;
+
     /// <summary>Gets or sets the Jellyfin address written into <c>.strm</c> files. Empty uses the server's local address.</summary>
     public string StreamBaseUrl { get; set; } = string.Empty;
 
