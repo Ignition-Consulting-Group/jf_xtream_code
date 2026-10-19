@@ -216,14 +216,15 @@
         favourite.hidden = false;
         favourite.setAttribute('aria-pressed', String(!!(channel.UserData && channel.UserData.IsFavorite)));
         favourite.textContent = channel.UserData && channel.UserData.IsFavorite ? 'Remove favourite' : 'Add favourite';
-        try {
-            const programmes = await api('/LiveTv/Programs?userId=' + session.UserId + '&channelIds=' + channel.Id + '&minEndDate=' + new Date().toISOString() + '&sortBy=StartDate&limit=2');
-            $('now').textContent = programmes.Items[0] ? programmes.Items[0].Name : '-';
-            $('next').textContent = programmes.Items[1] ? programmes.Items[1].Name : '-';
-        } catch (e) {
-            $('now').textContent = '-';
-            $('next').textContent = '-';
+        const items = await api('/LiveTv/Programs?userId=' + session.UserId + '&channelIds=' + channel.Id + '&minEndDate=' + new Date().toISOString() + '&sortBy=StartDate&limit=2')
+            .then((programmes) => programmes.Items, () => []);
+        // A slower reply for a channel the user has already zapped past must not overwrite the current one.
+        if (state.channels[state.selected] !== channel) {
+            return;
         }
+
+        $('now').textContent = items[0] ? items[0].Name : '-';
+        $('next').textContent = items[1] ? items[1].Name : '-';
     }
 
     function select(index) {

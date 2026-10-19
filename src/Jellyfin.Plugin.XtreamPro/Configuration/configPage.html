@@ -37,7 +37,7 @@
 
                     <section id="xp-panel-providers" role="tabpanel" aria-labelledby="xp-tab-providers">
                         <div id="xp-providers"></div>
-                        <button is="emby-button" type="button" id="xp-add-provider" class="raised emby-button">Add provider</button>
+                        <button is="emby-button" type="button" id="xp-add-provider" class="raised emby-button" disabled>Add provider</button>
                     </section>
 
                     <section id="xp-panel-libraries" role="tabpanel" aria-labelledby="xp-tab-libraries" hidden>
@@ -483,6 +483,7 @@
                     $('#xp-enhanced').checked = !!config.EnableEnhancedLiveTv;
                     api('GET', 'XtreamPro/EnhancedUi').then((s) => { $('#xp-enhanced-status').textContent = s.Message || ''; }).catch(() => {});
                     renderProviders();
+                    $('#xp-add-provider').disabled = false;
                     Dashboard.hideLoadingMsg();
                 });
 
