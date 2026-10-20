@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Jellyfin.Plugin.XtreamPro;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Model.Serialization;
@@ -47,5 +48,21 @@ public class PluginTests
     public void GetPages_UsesPluginNameSoTheDashboardLinksToIt()
     {
         _plugin.GetPages().Single().Name.ShouldBe(_plugin.Name);
+    }
+
+    [Fact]
+    public void AssemblyVersion_MatchesBuildYaml()
+    {
+        // Jellyfin reports the assembly version as the installed version and compares it when checking for updates.
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (!File.Exists(Path.Combine(dir!.FullName, "Jellyfin.Plugin.XtreamPro.slnx")))
+        {
+            dir = dir.Parent;
+        }
+
+        var buildYaml = File.ReadAllText(Path.Combine(dir.FullName, "src", "Jellyfin.Plugin.XtreamPro", "build.yaml"));
+        var version = Regex.Match(buildYaml, "^version: \"(?<v>[0-9.]+)\"", RegexOptions.Multiline).Groups["v"].Value;
+
+        typeof(Plugin).Assembly.GetName().Version.ShouldBe(Version.Parse(version));
     }
 }
