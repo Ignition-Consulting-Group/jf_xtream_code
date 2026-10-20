@@ -71,4 +71,32 @@ public class ResilienceHandlerTests
         healthy.StatusCode.ShouldBe(HttpStatusCode.OK);
         stub.Requests.Count(r => r.RequestUri!.Host == "up.fake.test").ShouldBe(1);
     }
+
+    [Theory]
+    [InlineData("http://iptv.fake.test/xmltv.php?username=u&password=p")]
+    [InlineData("http://iptv.fake.test/player_api.php?username=u&password=p&action=get_short_epg&stream_id=1")]
+    public async Task FailingGuideRequests_DoNotBlockTheRestOfTheProvider(string guideUrl)
+    {
+        var stub = new StubHandler(r => r.RequestUri!.Query.Contains("get_live_streams", StringComparison.Ordinal)
+            ? StubHandler.Json("[]")
+            : new HttpResponseMessage(HttpStatusCode.BadGateway));
+        var client = Client(stub);
+        var ct = TestContext.Current.CancellationToken;
+
+        for (var i = 0; i < 3; i++)
+        {
+            try
+            {
+                using var _ = await client.GetAsync(new Uri(guideUrl), ct);
+            }
+            catch (BrokenCircuitException)
+            {
+                break;
+            }
+        }
+
+        await Should.ThrowAsync<BrokenCircuitException>(() => client.GetAsync(new Uri(guideUrl), ct));
+        using var channels = await client.GetAsync(new Uri("http://iptv.fake.test/player_api.php?username=u&password=p&action=get_live_streams"), ct);
+        channels.StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
 }
