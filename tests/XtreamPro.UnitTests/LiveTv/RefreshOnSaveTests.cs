@@ -67,4 +67,15 @@ public class RefreshOnSaveTests
 
         _tasks.DidNotReceive().QueueScheduledTask<RefreshGuideTask>();
     }
+
+    [Fact]
+    public async Task TurningLiveTvBackOn_RefreshesTheGuide()
+    {
+        _plugin.UpdateConfiguration(new PluginConfiguration { ShowLiveTv = false });
+        await StartAsync();
+
+        _plugin.UpdateConfiguration(new PluginConfiguration { ShowLiveTv = true });
+
+        _tasks.Received(1).QueueScheduledTask<RefreshGuideTask>();
+    }
 }

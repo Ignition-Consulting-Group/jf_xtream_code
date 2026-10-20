@@ -35,6 +35,7 @@ public class ScheduledTaskTests
         var guide = await _h.Guides.LoadAsync(_h.Provider.Profile.Id, TestContext.Current.CancellationToken);
         guide!.Programmes[_h.Channel(101)].ShouldNotBeEmpty();
         _tasks.Received(1).QueueScheduledTask(_jellyfinGuideTask, Arg.Any<TaskOptions>());
+        _tasks.Received(1).QueueScheduledTask<PrepareCategoriesTask>();
     }
 
     [Fact]
@@ -47,6 +48,7 @@ public class ScheduledTaskTests
 
         _h.Provider.Handler.Requests.Count.ShouldBeGreaterThan(calls);
         _tasks.Received(1).QueueScheduledTask(_jellyfinGuideTask, Arg.Any<TaskOptions>());
+        _tasks.Received(1).QueueScheduledTask<PrepareCategoriesTask>();
     }
 
     [Fact]

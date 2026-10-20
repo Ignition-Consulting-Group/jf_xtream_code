@@ -3,6 +3,7 @@
 ## After 1.1.0
 
 - "Live TV Categories" channel: category folders, then channels, in every client ([ADR 0010](adr/0010-live-categories-as-a-jellyfin-channel.md)).
+- Categories are prepared in the background after each channel refresh (first open went from 55 seconds to 0.1 seconds at 17,000 channels), and Jellyfin Live TV can be turned off so only the categories show.
 
 ## Phase 7 - Release (done, v1.0.0 released)
 

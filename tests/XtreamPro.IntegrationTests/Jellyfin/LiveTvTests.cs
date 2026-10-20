@@ -101,6 +101,44 @@ public sealed class LiveTvTests : IClassFixture<JellyfinFixture>, IAsyncLifetime
     }
 
     [Fact]
+    public async Task PrepareCategories_SavesEveryCategoryAhead()
+    {
+        await ChannelsAsync();
+
+        await _api.RunTaskToCompletionAsync("XtreamProPrepareCategories", Ct);
+
+        var channelId = (await _api.GetAsync($"/Channels?userId={_api.UserId}", Ct))["Items"]![0]!["Id"]!.GetValue<string>();
+        var folders = (await _api.GetAsync($"/Items?userId={_api.UserId}&parentId={channelId}", Ct))["Items"]!.AsArray();
+        folders.ShouldNotBeEmpty();
+        foreach (var folder in folders)
+        {
+            var saved = await _api.GetAsync($"/Items?userId={_api.UserId}&parentId={folder!["Id"]!.GetValue<string>()}&limit=0", Ct);
+            saved["TotalRecordCount"]!.GetValue<int>().ShouldBeGreaterThan(0);
+        }
+    }
+
+    [Fact]
+    public async Task HidingLiveTv_KeepsTheCategories()
+    {
+        await ChannelsAsync();
+        var config = await _api.GetAsync($"/Plugins/{PluginId}/Configuration", Ct);
+        try
+        {
+            config["ShowLiveTv"] = false;
+            await _api.PostAsync($"/Plugins/{PluginId}/Configuration", config, Ct);
+
+            var views = (await _api.GetAsync($"/UserViews?userId={_api.UserId}", Ct))["Items"]!.AsArray();
+            views.Select(v => v!["CollectionType"]?.GetValue<string>()).ShouldNotContain("livetv");
+            views.Select(v => v!["Name"]!.GetValue<string>()).ShouldContain("Live TV Categories");
+        }
+        finally
+        {
+            config["ShowLiveTv"] = true;
+            await _api.PostAsync($"/Plugins/{PluginId}/Configuration", config, Ct);
+        }
+    }
+
+    [Fact]
     public async Task Channel_OpensAStreamFromTheProvider()
     {
         var channel = (await ChannelsAsync()).First()!["Id"]!.GetValue<string>();

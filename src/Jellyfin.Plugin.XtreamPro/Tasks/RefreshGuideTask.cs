@@ -76,6 +76,7 @@ public class RefreshGuideTask : IScheduledTask
         }
 
         JellyfinTasks.QueueGuideRefresh(_tasks);
+        _tasks.QueueScheduledTask<PrepareCategoriesTask>();
     }
 
     /// <inheritdoc />

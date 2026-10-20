@@ -60,7 +60,7 @@ public sealed class RefreshOnSave : IHostedService
         return Task.CompletedTask;
     }
 
-    private static string Serialize(PluginConfiguration config) => JsonSerializer.Serialize(config.Providers);
+    private static string Serialize(PluginConfiguration config) => JsonSerializer.Serialize(new { config.Providers, config.ShowLiveTv });
 
     private void OnConfigurationChanged(object? sender, BasePluginConfiguration e)
     {
