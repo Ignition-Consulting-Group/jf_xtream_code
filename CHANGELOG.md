@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0](https://github.com/Ignition-Consulting-Group/jf_xtream_code/compare/v1.0.3...v1.1.0) (2026-10-20)
+
+
+### Features
+
+* **web:** drive the enhanced Live TV page with a TV remote ([#29](https://github.com/Ignition-Consulting-Group/jf_xtream_code/issues/29)) ([4060b39](https://github.com/Ignition-Consulting-Group/jf_xtream_code/commit/4060b39e6ce526ac2344855a1440d9f9b36ad3be))
+
+
+### Bug Fixes
+
+* keep channels loading when the provider's guide is failing ([#28](https://github.com/Ignition-Consulting-Group/jf_xtream_code/issues/28)) ([9f0c541](https://github.com/Ignition-Consulting-Group/jf_xtream_code/commit/9f0c5416c1eac09450592a8c01466686146a48a5))
+* show Live TV to users ([#25](https://github.com/Ignition-Consulting-Group/jf_xtream_code/issues/25)) ([74e2af2](https://github.com/Ignition-Consulting-Group/jf_xtream_code/commit/74e2af2c3bbffbccc316de184e1a5ec539bbc3f6))
+* skip adult live categories when the profile says to ([#27](https://github.com/Ignition-Consulting-Group/jf_xtream_code/issues/27)) ([e882f5a](https://github.com/Ignition-Consulting-Group/jf_xtream_code/commit/e882f5a9088bce26ab09041af07601d023f473cd))
+
 ## [1.0.3](https://github.com/Ignition-Consulting-Group/jf_xtream_code/compare/v1.0.2...v1.0.3) (2026-10-20)
 
 
