@@ -2,9 +2,11 @@
     'use strict';
     const recentKey = 'xtreampro-recent';
     const guideHours = 3;
+    const rowHeight = 56;
+    const overscan = 10;
     const deviceId = 'xtreampro-' + (localStorage.getItem('_deviceId2') || 'browser');
     const $ = (id) => document.getElementById(id);
-    const state = { channels: [], visible: [], category: 'All', selected: -1, session: null, hls: null, digits: '', digitTimer: null, ticket: 0, playTimer: null, tuning: Promise.resolve() };
+    const state = { channels: [], visible: [], category: 'All', selected: -1, session: null, hls: null, digits: '', digitTimer: null, ticket: 0, playTimer: null, tuning: Promise.resolve(), frame: 0 };
 
     function server() {
         let saved = null;
@@ -86,6 +88,7 @@
                 $('search').value = '';
                 renderCategories();
                 renderChannels();
+                $('channels').focus();
             });
             return el('li', {}, button);
         }));
@@ -121,19 +124,48 @@
         return image;
     }
 
-    function renderChannels() {
-        state.visible = filtered();
+    // Only the rows in view are in the page, so categories with thousands of channels stay quick on TV browsers.
+    function renderRows() {
+        const scroller = $('channel-scroll');
+        const first = Math.max(0, Math.floor(scroller.scrollTop / rowHeight) - overscan);
+        const last = Math.min(state.visible.length, Math.ceil((scroller.scrollTop + scroller.clientHeight) / rowHeight) + overscan);
         const current = state.channels[state.selected];
-        $('channels').replaceChildren(...state.visible.map((channel) => {
+        $('channels').replaceChildren(...state.visible.slice(first, last).map((channel, i) => {
             const item = el('li', { role: 'option', id: 'ch-' + channel.Id },
                 el('span', { className: 'num', textContent: channel.ChannelNumber || '' }),
                 logo(channel),
                 el('span', {}, channel.Name, el('span', { className: 'now', textContent: channel.CurrentProgram ? channel.CurrentProgram.Name : '' })));
+            item.style.top = (first + i) * rowHeight + 'px';
+            item.setAttribute('aria-setsize', String(state.visible.length));
+            item.setAttribute('aria-posinset', String(first + i + 1));
             item.setAttribute('aria-selected', String(current === channel));
             item.addEventListener('click', () => select(state.channels.indexOf(channel)));
             return item;
         }));
+        const active = current && $('ch-' + current.Id);
+        if (active) {
+            $('channels').setAttribute('aria-activedescendant', active.id);
+        } else {
+            $('channels').removeAttribute('aria-activedescendant');
+        }
+    }
+
+    function renderChannels() {
+        state.visible = filtered();
+        $('channels').style.height = state.visible.length * rowHeight + 'px';
+        $('channel-scroll').scrollTop = 0;
+        renderRows();
         renderGuide();
+    }
+
+    function scrollToRow(position) {
+        const scroller = $('channel-scroll');
+        const top = position * rowHeight;
+        if (top < scroller.scrollTop) {
+            scroller.scrollTop = top;
+        } else if (top + rowHeight > scroller.scrollTop + scroller.clientHeight) {
+            scroller.scrollTop = top + rowHeight - scroller.clientHeight;
+        }
     }
 
     function closeSession(previous) {
@@ -235,12 +267,12 @@
 
         state.selected = index;
         remember(channel.Id);
-        $('channels').querySelectorAll('[role="option"]').forEach((o) => o.setAttribute('aria-selected', String(o.id === 'ch-' + channel.Id)));
-        const item = $('ch-' + channel.Id);
-        if (item) {
-            $('channels').setAttribute('aria-activedescendant', item.id);
-            item.scrollIntoView({ block: 'nearest' });
+        const position = state.visible.indexOf(channel);
+        if (position >= 0) {
+            scrollToRow(position);
         }
+
+        renderRows();
 
         showNowNext(channel);
         schedulePlay(channel);
@@ -307,14 +339,95 @@
             })))));
     }
 
+    function focusCategory(delta) {
+        const buttons = [...$('categories').querySelectorAll('button')];
+        const index = buttons.indexOf(document.activeElement);
+        const target = index < 0 ? buttons.find((b) => b.getAttribute('aria-current') === 'true') || buttons[0] : buttons[index + delta];
+        if (target) {
+            target.focus();
+            target.scrollIntoView({ block: 'nearest' });
+        } else if (delta < 0) {
+            $('category-search').focus();
+        }
+    }
+
+    function fullScreen() {
+        const video = $('video');
+        if (state.session && video.requestFullscreen) {
+            video.requestFullscreen().catch(() => {});
+        }
+    }
+
+    // TV remotes send arrows, Enter and a Back key (461 on LG webOS); Channel +/- arrive as PageUp/PageDown.
+    function isBack(e) {
+        return e.key === 'GoBack' || e.key === 'BrowserBack' || e.key === 'Escape' || e.keyCode === 461;
+    }
+
+    function back(e) {
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+        } else if (!$('categories').contains(document.activeElement)) {
+            focusCategory(0);
+        } else if (e.key !== 'Escape') {
+            location.href = '/web/';
+        }
+    }
+
+    function onCategoryKey(e) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            focusCategory(e.key === 'ArrowDown' ? 1 : -1);
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            $('channels').focus();
+        }
+    }
+
+    function onSearchKey(e) {
+        if (e.key === 'ArrowDown' || isBack(e)) {
+            e.preventDefault();
+            if (e.target === $('category-search')) {
+                focusCategory(0);
+            } else {
+                $('channels').focus();
+            }
+        }
+    }
+
     document.addEventListener('keydown', (e) => {
         if (e.target === $('search') || e.target === $('category-search')) {
+            onSearchKey(e);
             return;
         }
 
-        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        if (isBack(e)) {
             e.preventDefault();
-            zap(e.key === 'ArrowDown' ? 1 : -1);
+            back(e);
+            return;
+        }
+
+        if ($('categories').contains(e.target)) {
+            onCategoryKey(e);
+            return;
+        }
+
+        const inPreview = $('favourite') === e.target || $('video') === e.target;
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'PageDown') {
+            e.preventDefault();
+            zap(e.key === 'ArrowDown' || e.key === 'PageUp' ? 1 : -1);
+        } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            if (inPreview) {
+                $('channels').focus();
+            } else {
+                focusCategory(0);
+            }
+        } else if (e.key === 'ArrowRight' && !inPreview) {
+            e.preventDefault();
+            ($('favourite').hidden ? $('video') : $('favourite')).focus();
+        } else if (e.key === 'Enter' && e.target === $('channels')) {
+            e.preventDefault();
+            fullScreen();
         } else if (/^[0-9]$/.test(e.key)) {
             state.digits += e.key;
             status('Channel ' + state.digits);
@@ -330,6 +443,14 @@
     $('search').addEventListener('input', renderChannels);
     $('category-search').addEventListener('input', renderCategories);
     $('favourite').addEventListener('click', toggleFavourite);
+    $('channel-scroll').addEventListener('scroll', () => {
+        if (!state.frame) {
+            state.frame = requestAnimationFrame(() => {
+                state.frame = 0;
+                renderRows();
+            });
+        }
+    }, { passive: true });
     window.addEventListener('pagehide', stopPreview);
     window.addEventListener('beforeunload', stopPreview);
 
@@ -339,6 +460,7 @@
             status(state.channels.length + ' channels');
             renderCategories();
             renderChannels();
+            $('channels').focus();
         })
         .catch((e) => status('Could not load channels: ' + e.message));
 })();
