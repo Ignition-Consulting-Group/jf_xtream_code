@@ -1,8 +1,12 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
+using Jellyfin.Plugin.XtreamPro;
+using Jellyfin.Plugin.XtreamPro.Configuration;
 using Jellyfin.Plugin.XtreamPro.LiveTv;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Model.LiveTv;
+using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -13,11 +17,27 @@ public class ListingsRegistrationTests
 {
     private readonly IConfigurationManager _config = Substitute.For<IConfigurationManager>();
 
+    private readonly Plugin _plugin;
+
+    public ListingsRegistrationTests()
+    {
+        var paths = Substitute.For<IApplicationPaths>();
+        paths.PluginConfigurationsPath.Returns(Path.GetTempPath());
+        _plugin = new Plugin(paths, Substitute.For<IXmlSerializer>());
+        _plugin.UpdateConfiguration(new PluginConfiguration());
+    }
+
     private Task Start(LiveTvOptions options)
     {
         _config.GetConfiguration("livetv").Returns(options);
-        return new ListingsRegistration(_config, NullLogger<ListingsRegistration>.Instance).StartAsync(TestContext.Current.CancellationToken);
+        return new ListingsRegistration(_config, _plugin, NullLogger<ListingsRegistration>.Instance).StartAsync(TestContext.Current.CancellationToken);
     }
+
+    private static LiveTvOptions Registered() => new()
+    {
+        ListingProviders = [new ListingsProviderInfo { Type = "xmltv", Id = "other" }, new ListingsProviderInfo { Type = ChannelId.TunerHostId, Id = "x" }],
+        TunerHosts = [new TunerHostInfo { Type = ChannelId.TunerHostId, Id = "y" }],
+    };
 
     [Fact]
     public async Task Start_AddsTheGuideProviderForAllTuners()
@@ -65,6 +85,32 @@ public class ListingsRegistrationTests
     {
         _config.GetConfiguration("livetv").Throws(new InvalidOperationException("boom"));
 
-        await new ListingsRegistration(_config, NullLogger<ListingsRegistration>.Instance).StartAsync(TestContext.Current.CancellationToken);
+        await new ListingsRegistration(_config, _plugin, NullLogger<ListingsRegistration>.Instance).StartAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task Start_WithLiveTvHidden_RemovesOnlyOurEntries()
+    {
+        _plugin.UpdateConfiguration(new PluginConfiguration { ShowLiveTv = false });
+        var options = Registered();
+
+        await Start(options);
+
+        options.ListingProviders.ShouldHaveSingleItem().Id.ShouldBe("other");
+        options.TunerHosts.ShouldBeEmpty();
+        _config.Received(1).SaveConfiguration("livetv", options);
+    }
+
+    [Fact]
+    public async Task TogglingLiveTv_AppliesWithoutARestart()
+    {
+        var options = Registered();
+        await Start(options);
+
+        _plugin.UpdateConfiguration(new PluginConfiguration { ShowLiveTv = false });
+        options.TunerHosts.ShouldBeEmpty();
+
+        _plugin.UpdateConfiguration(new PluginConfiguration { ShowLiveTv = true });
+        options.TunerHosts.ShouldHaveSingleItem().Type.ShouldBe(ChannelId.TunerHostId);
     }
 }

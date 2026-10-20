@@ -63,6 +63,13 @@
                         </div>
                         <div class="checkboxContainer checkboxContainer-withDescription">
                             <label>
+                                <input is="emby-checkbox" type="checkbox" id="xp-livetv" />
+                                <span>Show channels in Jellyfin Live TV</span>
+                            </label>
+                            <div class="fieldDescription">Adds the guide and the Live TV menu entry. Turn off to browse channels only through Live TV Categories, which also skips the long guide refresh. The enhanced Live TV page needs this on.</div>
+                        </div>
+                        <div class="checkboxContainer checkboxContainer-withDescription">
+                            <label>
                                 <input is="emby-checkbox" type="checkbox" id="xp-enhanced" />
                                 <span>Enhanced Live TV page</span>
                             </label>
@@ -480,6 +487,7 @@
                     config = await ApiClient.getPluginConfiguration(pluginId);
                     page.querySelectorAll('[data-config]').forEach((input) => { input.value = config[input.dataset.config] ?? ''; });
                     $('#xp-title-rules').value = (config.TitleRules || []).join('\n');
+                    $('#xp-livetv').checked = config.ShowLiveTv !== false;
                     $('#xp-enhanced').checked = !!config.EnableEnhancedLiveTv;
                     api('GET', 'XtreamPro/EnhancedUi').then((s) => { $('#xp-enhanced-status').textContent = s.Message || ''; }).catch(() => {});
                     renderProviders();
@@ -494,6 +502,7 @@
                         config[input.dataset.config] = input.type === 'number' ? Number(input.value) : input.value;
                     });
                     config.TitleRules = $('#xp-title-rules').value.split('\n').filter((r) => r.trim());
+                    config.ShowLiveTv = $('#xp-livetv').checked;
                     config.EnableEnhancedLiveTv = $('#xp-enhanced').checked;
                     const result = await ApiClient.updatePluginConfiguration(pluginId, config);
                     Dashboard.processPluginConfigurationUpdateResult(result);

@@ -45,6 +45,7 @@ public class RefreshChannelsTask : IScheduledTask
         await _catalog.GetChannelsAsync(false, cancellationToken).ConfigureAwait(false);
         progress.Report(100);
         JellyfinTasks.QueueGuideRefresh(_tasks);
+        _tasks.QueueScheduledTask<PrepareCategoriesTask>();
     }
 
     /// <inheritdoc />

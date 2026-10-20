@@ -18,6 +18,11 @@ namespace Jellyfin.Plugin.XtreamPro.LiveTv;
 /// </summary>
 public class CategoryChannel : IChannel, IRequiresMediaInfoCallback
 {
+    /// <summary>
+    /// The channel name, which is also how Jellyfin identifies it.
+    /// </summary>
+    public const string ChannelName = "Live TV Categories";
+
     private const string Other = "Other";
 
     private readonly LiveCatalog _catalog;
@@ -32,7 +37,7 @@ public class CategoryChannel : IChannel, IRequiresMediaInfoCallback
     }
 
     /// <inheritdoc />
-    public string Name => "Live TV Categories";
+    public string Name => ChannelName;
 
     /// <inheritdoc />
     public string Description => "Live channels by provider category.";
