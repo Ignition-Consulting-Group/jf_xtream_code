@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/Ignition-Consulting-Group/jf_xtream_code/compare/v1.0.2...v1.0.3) (2026-10-20)
+
+
+### Bug Fixes
+
+* load live channels as soon as providers are saved ([#23](https://github.com/Ignition-Consulting-Group/jf_xtream_code/issues/23)) ([4e7f14f](https://github.com/Ignition-Consulting-Group/jf_xtream_code/commit/4e7f14fb18c9fe9156a74af58174dcea5f53c4cc))
+
 ## [1.0.2](https://github.com/Ignition-Consulting-Group/jf_xtream_code/compare/v1.0.1...v1.0.2) (2026-10-20)
 
 
