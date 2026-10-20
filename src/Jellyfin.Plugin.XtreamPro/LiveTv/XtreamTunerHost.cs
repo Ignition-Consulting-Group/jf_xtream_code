@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,9 +9,7 @@ using Jellyfin.Plugin.XtreamPro.Configuration;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.LiveTv;
 using MediaBrowser.Model.Dto;
-using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.LiveTv;
-using MediaBrowser.Model.MediaInfo;
 
 namespace Jellyfin.Plugin.XtreamPro.LiveTv;
 
@@ -81,30 +78,5 @@ public class XtreamTunerHost : ITunerHost
         => Task.FromResult(new List<TunerHostInfo>());
 
     private MediaSourceInfo CreateMediaSource(ProviderProfile profile, LiveChannel channel, string channelId)
-    {
-        var client = _catalog.CreateClient(profile);
-        var hls = profile.LiveFormat == LiveFormat.Hls;
-        var source = new MediaSourceInfo
-        {
-            Id = channelId,
-            Path = client.Urls.Live(channel.StreamId, profile.LiveFormat).AbsoluteUri,
-            Protocol = MediaProtocol.Http,
-            Container = hls ? "hls" : "ts",
-            MediaStreams =
-            [
-                new MediaStream { Type = MediaStreamType.Video, Index = -1, IsInterlaced = true },
-                new MediaStream { Type = MediaStreamType.Audio, Index = -1 },
-            ],
-            RequiresOpening = true,
-            RequiresClosing = true,
-            IsInfiniteStream = true,
-            IsRemote = true,
-            SupportsDirectPlay = profile.PreferDirectPlay && !hls,
-            SupportsDirectStream = true,
-            SupportsTranscoding = true,
-            RequiredHttpHeaders = new Dictionary<string, string> { ["User-Agent"] = client.UserAgent },
-        };
-        source.InferTotalBitrate();
-        return source;
-    }
+        => LiveMediaSource.Create(_catalog.CreateClient(profile), profile, channel, channelId);
 }

@@ -6,6 +6,7 @@ using Jellyfin.Plugin.XtreamPro.LiveTv;
 using Jellyfin.Plugin.XtreamPro.Tasks;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Controller;
+using MediaBrowser.Controller.Channels;
 using MediaBrowser.Controller.LiveTv;
 using MediaBrowser.Model.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,6 +47,7 @@ public class PluginServiceRegistratorTests
         _provider.GetServices<IListingsProvider>().ShouldHaveSingleItem().ShouldBeOfType<XtreamListingsProvider>();
         _provider.GetServices<IHostedService>().OfType<ListingsRegistration>().ShouldHaveSingleItem();
         _provider.GetServices<IHostedService>().OfType<RefreshOnSave>().ShouldHaveSingleItem();
+        _provider.GetServices<IChannel>().ShouldHaveSingleItem().ShouldBeOfType<CategoryChannel>();
     }
 
     [Fact]
