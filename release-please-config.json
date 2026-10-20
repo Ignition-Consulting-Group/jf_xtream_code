@@ -8,7 +8,8 @@
       "include-v-in-tag": true,
       "include-component-in-tag": false,
       "extra-files": [
-        { "type": "generic", "path": "src/Jellyfin.Plugin.XtreamPro/build.yaml" }
+        { "type": "generic", "path": "src/Jellyfin.Plugin.XtreamPro/build.yaml" },
+        { "type": "generic", "path": "Directory.Build.props" }
       ]
     }
   }
