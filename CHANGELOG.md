@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/Ignition-Consulting-Group/jf_xtream_code/compare/v1.1.0...v1.2.0) (2026-10-20)
+
+
+### Features
+
+* **livetv:** browse live channels by category in every client ([#30](https://github.com/Ignition-Consulting-Group/jf_xtream_code/issues/30)) ([702dd89](https://github.com/Ignition-Consulting-Group/jf_xtream_code/commit/702dd8903f07a009b52f2d21328a264a11e0cc4b))
+
 ## [1.1.0](https://github.com/Ignition-Consulting-Group/jf_xtream_code/compare/v1.0.3...v1.1.0) (2026-10-20)
 
 
