@@ -56,6 +56,18 @@ public class ChannelMapperTests
     }
 
     [Fact]
+    public void Map_SkipsAdultCategoriesUnlessTheProfileAllowsThem()
+    {
+        Category[] categories = [.. Categories, new() { CategoryId = "3", CategoryName = "PREMIUM XXX" }];
+        LiveChannel[] channels = [Channel(10, "2"), Channel(11, "3")];
+
+        ChannelMapper.Map(_profile, categories, channels).Select(c => c.Name).ShouldBe(["Ch 10"]);
+
+        _profile.SkipAdultCategories = false;
+        ChannelMapper.Map(_profile, categories, channels).Select(c => c.Name).ShouldBe(["Ch 10", "Ch 11"]);
+    }
+
+    [Fact]
     public void Map_DropsExcludedCategoriesAndAppliesRenames()
     {
         _profile.LiveCategories.Add(new CategoryRule { CategoryId = "2", Excluded = true });
