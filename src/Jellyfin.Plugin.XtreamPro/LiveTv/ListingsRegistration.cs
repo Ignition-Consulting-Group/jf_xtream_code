@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace Jellyfin.Plugin.XtreamPro.LiveTv;
 
 /// <summary>
-/// Adds the Xtream Pro guide provider to Jellyfin's Live TV settings on startup, so no manual setup is needed.
+/// Adds the Xtream Pro tuner and guide provider to Jellyfin's Live TV settings on startup, so no manual setup is needed.
 /// </summary>
 public class ListingsRegistration : IHostedService
 {
@@ -38,15 +38,22 @@ public class ListingsRegistration : IHostedService
         try
         {
             var options = _config.GetConfiguration<LiveTvOptions>(LiveTvKey);
+            var changed = false;
             if (!options.ListingProviders.Any(p => p.Type == ChannelId.TunerHostId))
             {
-                var info = new ListingsProviderInfo
-                {
-                    Id = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture),
-                    Type = ChannelId.TunerHostId,
-                    EnableAllTuners = true,
-                };
-                options.ListingProviders = [.. options.ListingProviders, info];
+                options.ListingProviders = [.. options.ListingProviders, new ListingsProviderInfo { Id = NewId(), Type = ChannelId.TunerHostId, EnableAllTuners = true }];
+                changed = true;
+            }
+
+            // Jellyfin only enables Live TV for users, and its guide task, when a tuner is listed. The tuner host itself ignores this entry.
+            if (!options.TunerHosts.Any(t => t.Type == ChannelId.TunerHostId))
+            {
+                options.TunerHosts = [.. options.TunerHosts, new TunerHostInfo { Id = NewId(), Type = ChannelId.TunerHostId, FriendlyName = "Xtream Pro" }];
+                changed = true;
+            }
+
+            if (changed)
+            {
                 _config.SaveConfiguration(LiveTvKey, options);
             }
         }
@@ -62,4 +69,6 @@ public class ListingsRegistration : IHostedService
 
     /// <inheritdoc />
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    private static string NewId() => Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture);
 }

@@ -52,6 +52,15 @@ public sealed class LiveTvTests : IClassFixture<JellyfinFixture>, IAsyncLifetime
             Ct);
 
     [Fact]
+    public async Task LiveTv_IsShownToUsers()
+    {
+        await ChannelsAsync();
+
+        var views = (await _api.GetAsync($"/UserViews?userId={_api.UserId}", Ct))["Items"]!.AsArray();
+        views.Select(v => v!["CollectionType"]?.GetValue<string>()).ShouldContain("livetv");
+    }
+
+    [Fact]
     public async Task ChannelsAndGuide_AppearInJellyfin()
     {
         var channels = await ChannelsAsync();
