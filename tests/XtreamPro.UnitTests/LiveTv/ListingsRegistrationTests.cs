@@ -35,9 +35,27 @@ public class ListingsRegistrationTests
     }
 
     [Fact]
+    public async Task Start_AddsATunerSoJellyfinEnablesLiveTvForUsers()
+    {
+        var options = new LiveTvOptions { TunerHosts = [new TunerHostInfo { Type = "m3u", Id = "other" }] };
+
+        await Start(options);
+
+        options.TunerHosts.Length.ShouldBe(2);
+        options.TunerHosts[1].ShouldSatisfyAllConditions(
+            t => t.Type.ShouldBe(ChannelId.TunerHostId),
+            t => t.FriendlyName.ShouldBe("Xtream Pro"),
+            t => t.Id.ShouldNotBeNullOrEmpty());
+    }
+
+    [Fact]
     public async Task Start_WhenAlreadyRegistered_DoesNothing()
     {
-        await Start(new LiveTvOptions { ListingProviders = [new ListingsProviderInfo { Type = ChannelId.TunerHostId, Id = "x" }] });
+        await Start(new LiveTvOptions
+        {
+            ListingProviders = [new ListingsProviderInfo { Type = ChannelId.TunerHostId, Id = "x" }],
+            TunerHosts = [new TunerHostInfo { Type = ChannelId.TunerHostId, Id = "y" }],
+        });
 
         _config.DidNotReceiveWithAnyArgs().SaveConfiguration(default!, default!);
     }
