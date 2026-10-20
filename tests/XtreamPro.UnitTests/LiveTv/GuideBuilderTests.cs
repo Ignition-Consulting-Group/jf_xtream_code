@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.XtreamPro.Api;
@@ -7,6 +8,7 @@ using Jellyfin.Plugin.XtreamPro.Api.Models;
 using Jellyfin.Plugin.XtreamPro.Configuration;
 using Jellyfin.Plugin.XtreamPro.LiveTv;
 using Microsoft.Extensions.Logging.Abstractions;
+using Polly.CircuitBreaker;
 
 namespace XtreamPro.UnitTests.LiveTv;
 
@@ -101,5 +103,18 @@ public class GuideBuilderTests
 
         guide.Programmes.ShouldNotBeEmpty();
         later.Programmes.Values.SelectMany(p => p).ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task Build_WhenTheGuideCircuitOpens_StopsAskingAndKeepsGoing()
+    {
+        var handler = new StubHandler(r => r.RequestUri!.AbsolutePath == "/xmltv.php"
+            ? new HttpResponseMessage(HttpStatusCode.BadGateway)
+            : throw new BrokenCircuitException());
+
+        var guide = await Build(handler);
+
+        guide.Programmes.Count.ShouldBe(_channels.Length);
+        handler.Requests.Count(r => r.RequestUri!.Query.Contains("get_short_epg", StringComparison.Ordinal)).ShouldBe(1);
     }
 }

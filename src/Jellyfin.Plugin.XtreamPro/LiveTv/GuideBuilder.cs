@@ -11,6 +11,8 @@ using Jellyfin.Plugin.XtreamPro.Api.Models;
 using Jellyfin.Plugin.XtreamPro.Configuration;
 using Jellyfin.Plugin.XtreamPro.LiveTv.Xmltv;
 using Microsoft.Extensions.Logging;
+using Polly.CircuitBreaker;
+using Polly.Timeout;
 
 namespace Jellyfin.Plugin.XtreamPro.LiveTv;
 
@@ -76,7 +78,15 @@ public class GuideBuilder
             var list = InWindow(channel.EpgChannelId is { } guideId ? byGuideId.GetValueOrDefault(guideId) : null, windowStart, windowEnd);
             if (!list.Any(p => p.Stop > now) && budget-- > 0)
             {
-                list = InWindow(await ReadShortEpgAsync(client, channel, offset, cancellationToken).ConfigureAwait(false), windowStart, windowEnd);
+                try
+                {
+                    list = InWindow(await ReadShortEpgAsync(client, channel, offset, cancellationToken).ConfigureAwait(false), windowStart, windowEnd);
+                }
+                catch (BrokenCircuitException ex)
+                {
+                    _logger.LogWarning(ex, "The provider is failing guide requests, skipping the short EPG for the remaining channels");
+                    budget = 0;
+                }
             }
 
             if (list.Count == 0)
@@ -139,7 +149,7 @@ public class GuideBuilder
                 }
             }
         }
-        catch (Exception ex) when (ex is HttpRequestException or XmlException or InvalidDataException)
+        catch (Exception ex) when (ex is HttpRequestException or XmlException or InvalidDataException or BrokenCircuitException or TimeoutRejectedException)
         {
             _logger.LogWarning(ex, "Could not read the XMLTV guide, falling back to short EPG");
         }
@@ -164,7 +174,7 @@ public class GuideBuilder
                 })
                 .ToList();
         }
-        catch (Exception ex) when (ex is HttpRequestException or System.Text.Json.JsonException)
+        catch (Exception ex) when (ex is HttpRequestException or System.Text.Json.JsonException or TimeoutRejectedException)
         {
             _logger.LogDebug(ex, "No short EPG for stream {StreamId}", channel.StreamId);
             return [];

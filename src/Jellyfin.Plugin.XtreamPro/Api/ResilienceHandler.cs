@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ public class ResilienceHandler : DelegatingHandler
     /// <inheritdoc />
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var pipeline = _resilience.For(request.RequestUri!.Authority);
+        var pipeline = _resilience.For(PipelineKey(request.RequestUri!));
         return await pipeline.ExecuteAsync(
             static async (state, ct) => await state.Handler.BaseSendAsync(state.Request, ct).ConfigureAwait(false),
             (Handler: this, Request: request),
@@ -32,4 +33,11 @@ public class ResilienceHandler : DelegatingHandler
 
     private Task<HttpResponseMessage> BaseSendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         => base.SendAsync(request, cancellationToken);
+
+    // Guide downloads fail or time out far more often than the rest of the API, so they get their own circuit
+    // and cannot block channels, account checks or library sync.
+    private static string PipelineKey(Uri uri)
+        => uri.AbsolutePath.EndsWith("/xmltv.php", StringComparison.OrdinalIgnoreCase) || uri.Query.Contains("action=get_short_epg", StringComparison.Ordinal)
+            ? uri.Authority + "#guide"
+            : uri.Authority;
 }

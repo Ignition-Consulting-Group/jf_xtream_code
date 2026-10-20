@@ -14,7 +14,7 @@ Jellyfin loads each plugin in its own `AssemblyLoadContext`. Any assembly listed
 
 - Use Polly.Core directly. The server ships Polly.Core 8.7.0, so the plugin compiles against 8.7.0 with `ExcludeAssets=runtime` and uses the server's copy.
 - `Microsoft.Extensions.Http` comes from the `Microsoft.AspNetCore.App` framework reference, which the server also provides.
-- A `ResilienceHandler` runs each request through a pipeline from a `ResiliencePipelineRegistry` keyed by provider host: jittered exponential retry on 5xx, 408, 429, network errors and timeouts; a circuit breaker; a per-attempt timeout. One provider failing does not open the circuit for another.
+- A `ResilienceHandler` runs each request through a pipeline from a `ResiliencePipelineRegistry` keyed by provider host: jittered exponential retry on 5xx, 408, 429, network errors and timeouts; a circuit breaker; a per-attempt timeout. One provider failing does not open the circuit for another. Guide traffic (`xmltv.php` and `get_short_epg`) has its own circuit per host, because providers often fail or time out on the guide while the rest of the API works; a failing guide must not block channels, account checks or library sync.
 - The plugin output must stay free of bundled framework assemblies. The container test catches regressions.
 
 ## Consequences
