@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/Ignition-Consulting-Group/jf_xtream_code/compare/v1.2.0...v1.3.0) (2026-10-20)
+
+
+### Features
+
+* **livetv:** open categories instantly and allow hiding Jellyfin Live TV ([#32](https://github.com/Ignition-Consulting-Group/jf_xtream_code/issues/32)) ([6cf4b32](https://github.com/Ignition-Consulting-Group/jf_xtream_code/commit/6cf4b329012a3b45192a30bd5e06b1bbdb0d5710))
+
 ## [1.2.0](https://github.com/Ignition-Consulting-Group/jf_xtream_code/compare/v1.1.0...v1.2.0) (2026-10-20)
 
 
