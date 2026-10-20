@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/Ignition-Consulting-Group/jf_xtream_code/compare/v1.0.1...v1.0.2) (2026-10-20)
+
+
+### Bug Fixes
+
+* add providers when the dashboard is opened over plain http ([#21](https://github.com/Ignition-Consulting-Group/jf_xtream_code/issues/21)) ([a30823e](https://github.com/Ignition-Consulting-Group/jf_xtream_code/commit/a30823e8cd5d931be70e52a7e343b43226863912))
+
 ## [1.0.1](https://github.com/Ignition-Consulting-Group/jf_xtream_code/compare/v1.0.0...v1.0.1) (2026-10-20)
 
 
