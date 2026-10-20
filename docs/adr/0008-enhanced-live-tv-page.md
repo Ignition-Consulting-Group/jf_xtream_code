@@ -20,6 +20,8 @@ Spike findings:
 - A hidden startup task registers an `index.html` transformation that adds one `<script src="/XtreamPro/Web/inject.js">`. The loader adds a "Live TV+" entry to the drawer and puts it back whenever the web client rebuilds the drawer.
 - Degradation: if File Transformation is missing or rejects the registration, the task logs a warning, the dashboard shows why, and the page is still reachable by URL. If the drawer is not found the loader logs one console warning and does nothing. If the flag is turned off, the loader is served empty and the page returns 404, so a stale injection is harmless.
 - Tuning is debounced and serialised, and the open stream is closed on channel change and when the page is left, so zapping never holds more than one provider connection.
+- The page works with a TV remote alone, for the LG webOS and other apps that wrap jellyfin-web: Left and Right move between categories, channels and the preview, Up and Down move or zap, OK picks a category or goes full screen, Back (461 on webOS) steps out, and Channel +/- (PageUp/PageDown) zap.
+- The channel list only renders the rows in view, so providers with tens of thousands of channels stay quick on TV browsers. Tests drive the page with remote keys only, against a faked 17,000 channel catalogue.
 
 ## Consequences
 

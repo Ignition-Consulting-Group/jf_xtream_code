@@ -19,7 +19,9 @@
         </nav>
         <section aria-label="Channels" class="channels">
             <label class="search">Search all channels <input id="search" type="search" placeholder="Name or number"></label>
-            <ul id="channels" role="listbox" aria-label="Channel list" tabindex="0"></ul>
+            <div id="channel-scroll" class="channel-scroll">
+                <ul id="channels" role="listbox" aria-label="Channel list" tabindex="0"></ul>
+            </div>
         </section>
         <section aria-label="Preview" class="preview">
             <video id="video" controls muted playsinline aria-label="Live preview"></video>
@@ -29,7 +31,7 @@
                 <p><strong>Now:</strong> <span id="now">-</span></p>
                 <p><strong>Next:</strong> <span id="next">-</span></p>
             </div>
-            <p class="hint">Up and Down change channel. Type a number to jump to it. F toggles favourite.</p>
+            <p class="hint">Up and Down change channel, Left and Right move between categories, channels and the preview, OK goes full screen and Back returns. Type a number to jump to it. F toggles favourite.</p>
         </section>
     </main>
     <section aria-label="Guide" class="guide">
