@@ -34,11 +34,11 @@ public static class ChannelMapper
             .ThenBy(x => x.Position)
             .Select((x, index) => (x.c, index))
             .Where(x => x.c.CategoryId is not null)
-            .ToDictionary(x => x.c.CategoryId!, x => (x.index, Name: rules.GetValueOrDefault(x.c.CategoryId!)?.Rename ?? x.c.CategoryName));
+            .ToDictionary(x => x.c.CategoryId!, x => (x.index, Name: rules.GetValueOrDefault(x.c.CategoryId!)?.Rename ?? x.c.CategoryName, Adult: AdultCategory.Skips(profile, x.c.CategoryName)));
         var overrides = profile.ChannelNumbers.ToDictionary(o => o.StreamId, o => o.Number);
 
         var visible = channels
-            .Where(c => c.CategoryId is null || !(rules.GetValueOrDefault(c.CategoryId)?.Excluded ?? false))
+            .Where(c => c.CategoryId is null || !((rules.GetValueOrDefault(c.CategoryId)?.Excluded ?? false) || categoryOrder.GetValueOrDefault(c.CategoryId).Adult))
             .OrderBy(c => c.CategoryId is not null && categoryOrder.TryGetValue(c.CategoryId, out var cat) ? cat.index : int.MaxValue)
             .ThenBy(c => c.Num ?? int.MaxValue)
             .ToList();

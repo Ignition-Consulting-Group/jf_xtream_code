@@ -155,9 +155,6 @@ public partial class Planner
     [GeneratedRegex(@"^.*?\bS\d{1,2}\s*E\d{1,3}\b\s*-?\s*", RegexOptions.IgnoreCase, 100)]
     private static partial Regex EpisodePrefix();
 
-    [GeneratedRegex(@"\b(adult|xxx|porn|18\+)", RegexOptions.IgnoreCase, 100)]
-    private static partial Regex AdultCategory();
-
     private static IEnumerable<EpisodeEntry> Episodes(SeriesInfo info)
         => info.Episodes
             .OrderBy(s => s.Key)
@@ -193,7 +190,7 @@ public partial class Planner
             return false;
         }
 
-        return !(profile.SkipAdultCategories && names.TryGetValue(categoryId, out var name) && AdultCategory().IsMatch(name));
+        return !AdultCategory.Skips(profile, names.GetValueOrDefault(categoryId));
     }
 
     private static int? ParseYear(string? date)
