@@ -8,6 +8,14 @@
         "category": "LiveTV",
         "versions": [
             {
+                "version": "1.1.0.0",
+                "changelog": "See https://github.com/Ignition-Consulting-Group/jf_xtream_code/blob/main/CHANGELOG.md\n",
+                "targetAbi": "12.2.0.0",
+                "sourceUrl": "https://github.com/Ignition-Consulting-Group/jf_xtream_code/releases/download/v1.1.0/xtream-pro_1.1.0.0.zip",
+                "checksum": "252629504078efb173c6bb5e2baad679",
+                "timestamp": "2026-10-20T07:07:54Z"
+            },
+            {
                 "version": "1.0.3.0",
                 "changelog": "See https://github.com/Ignition-Consulting-Group/jf_xtream_code/blob/main/CHANGELOG.md\n",
                 "targetAbi": "12.2.0.0",
