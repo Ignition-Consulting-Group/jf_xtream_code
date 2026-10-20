@@ -37,7 +37,6 @@ public sealed class LiveTvTests : IClassFixture<JellyfinFixture>, IAsyncLifetime
             ["Password"] = "demo",
         });
         await _api.PostAsync($"/Plugins/{PluginId}/Configuration", config, Ct);
-        await _api.RunTaskAsync("XtreamProRefreshGuide", Ct);
     }
 
     public ValueTask DisposeAsync()

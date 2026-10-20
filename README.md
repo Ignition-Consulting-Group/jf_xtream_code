@@ -18,7 +18,7 @@ Or download the zip from the [latest release](https://github.com/Ignition-Consul
 
 1. Open Dashboard, Plugins, Xtream Pro.
 2. Add a provider with its URL, username and password, then use "Test connection" to check the account, expiry and connection usage.
-3. Live TV channels and the guide appear on their own after the "Refresh Xtream guide" task runs (Dashboard, Scheduled Tasks).
+3. Save. Live TV channels and the guide load in the background and appear under Live TV a few minutes later. Nothing needs adding in Dashboard, Live TV: the plugin supplies the tuner and guide itself, and its guide shows there as "Unknown".
 4. For movies and series, set a movies folder and a shows folder on the Libraries tab, run "Sync Xtream movies" and "Sync Xtream series", then add each folder as a Movies or Shows library.
 5. For catch-up, set a catch-up folder and add it as a Shows library. Past programmes on archive channels appear as episodes, one show per channel.
 6. Use the Categories tab to hide, rename or reorder categories, and Title cleanup to strip provider prefixes such as `EN | `.

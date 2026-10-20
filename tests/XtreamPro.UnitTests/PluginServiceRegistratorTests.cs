@@ -3,9 +3,11 @@ using System.Linq;
 using Jellyfin.Plugin.XtreamPro;
 using Jellyfin.Plugin.XtreamPro.Api;
 using Jellyfin.Plugin.XtreamPro.LiveTv;
+using Jellyfin.Plugin.XtreamPro.Tasks;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.LiveTv;
+using MediaBrowser.Model.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NSubstitute;
@@ -24,6 +26,7 @@ public class PluginServiceRegistratorTests
         paths.DataPath.Returns(Path.GetTempPath());
         services.AddSingleton(paths);
         services.AddSingleton(Substitute.For<IConfigurationManager>());
+        services.AddSingleton(Substitute.For<ITaskManager>());
 
         new PluginServiceRegistrator().RegisterServices(services, Substitute.For<IServerApplicationHost>());
         _provider = services.BuildServiceProvider();
@@ -42,6 +45,7 @@ public class PluginServiceRegistratorTests
         _provider.GetServices<ITunerHost>().ShouldHaveSingleItem().ShouldBeOfType<XtreamTunerHost>();
         _provider.GetServices<IListingsProvider>().ShouldHaveSingleItem().ShouldBeOfType<XtreamListingsProvider>();
         _provider.GetServices<IHostedService>().OfType<ListingsRegistration>().ShouldHaveSingleItem();
+        _provider.GetServices<IHostedService>().OfType<RefreshOnSave>().ShouldHaveSingleItem();
     }
 
     [Fact]

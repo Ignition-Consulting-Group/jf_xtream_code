@@ -19,4 +19,4 @@ Jellyfin 12.2 resolves `ITunerHost` and `IListingsProvider` from DI and iterates
 
 ## Consequences
 
-No manual Live TV setup is needed. Changing a provider profile's id changes its channel ids, so the config page must keep ids stable.
+No manual Live TV setup is needed. Because Jellyfin hides and disables its own "Refresh Guide" task when Live TV settings list no tuner, saving changed providers queues "Refresh Xtream guide", which queues Jellyfin's guide refresh in turn. Changing a provider profile's id changes its channel ids, so the config page must keep ids stable.
