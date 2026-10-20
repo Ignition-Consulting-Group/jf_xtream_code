@@ -50,6 +50,22 @@ public partial class ConfigPageTests : IClassFixture<ConfigPageFixture>
     }
 
     [Fact]
+    public async Task AddProvider_WorksOverPlainHttp()
+    {
+        // Browsers only expose crypto.randomUUID on secure origins, and most servers are opened at http://<lan address>.
+        var page = await _fixture.OpenConfigPageAsync();
+        await page.Context.AddInitScriptAsync("delete Crypto.prototype.randomUUID;");
+        await page.ReloadAsync();
+
+        await page.GetByRole(AriaRole.Button, new() { Name = "Add provider" }).ClickAsync();
+        await page.GetByRole(AriaRole.Group).Last.GetByLabel("Name", new() { Exact = true }).FillAsync("Plain HTTP");
+        await SaveAsync(page);
+
+        var saved = (await ConfigAsync())["Providers"]!.AsArray().Single(p => p!["Name"]!.GetValue<string>() == "Plain HTTP")!;
+        Guid.Parse(saved["Id"]!.GetValue<string>()).ShouldNotBe(Guid.Empty);
+    }
+
+    [Fact]
     public async Task WrongPassword_ShowsTheProviderError()
     {
         var page = await _fixture.OpenConfigPageAsync();
