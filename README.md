@@ -22,7 +22,8 @@ Or download the zip from the [latest release](https://github.com/Ignition-Consul
 4. For movies and series, set a movies folder and a shows folder on the Libraries tab, run "Sync Xtream movies" and "Sync Xtream series", then add each folder as a Movies or Shows library.
 5. For catch-up, set a catch-up folder and add it as a Shows library. Past programmes on archive channels appear as episodes, one show per channel.
 6. Use the Categories tab to hide, rename or reorder categories, and Title cleanup to strip provider prefixes such as `EN | `.
-7. Optional: turn on "Enhanced Live TV page" on the Libraries tab and restart. It is at `/XtreamPro/Web/`, and with the [File Transformation](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation) plugin installed it also appears as "Live TV+" in the web client menu.
+7. Live channels are also grouped by category under "Live TV Categories" in My Media, which works in every client, Roku included.
+8. Optional: turn on "Enhanced Live TV page" on the Libraries tab and restart. It is at `/XtreamPro/Web/`, and with the [File Transformation](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation) plugin installed it also appears as "Live TV+" in the web client menu.
 
 `.strm` files point back at this Jellyfin server and hold no provider credentials. Set "Stream base URL" to an address your clients can reach if the server's local address is not right.
 

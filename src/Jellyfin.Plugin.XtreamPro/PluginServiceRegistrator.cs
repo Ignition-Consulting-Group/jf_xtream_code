@@ -11,6 +11,7 @@ using Jellyfin.Plugin.XtreamPro.Tasks;
 using Jellyfin.Plugin.XtreamPro.Web;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Controller;
+using MediaBrowser.Controller.Channels;
 using MediaBrowser.Controller.LiveTv;
 using MediaBrowser.Controller.Plugins;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,6 +44,7 @@ public class PluginServiceRegistrator : IPluginServiceRegistrator
         serviceCollection.AddSingleton<LiveCatalog>();
         serviceCollection.AddSingleton<ITunerHost, XtreamTunerHost>();
         serviceCollection.AddSingleton<IListingsProvider, XtreamListingsProvider>();
+        serviceCollection.AddSingleton<IChannel, CategoryChannel>();
         serviceCollection.AddHostedService<ListingsRegistration>();
         serviceCollection.AddHostedService<RefreshOnSave>();
 

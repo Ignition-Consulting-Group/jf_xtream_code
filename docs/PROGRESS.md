@@ -1,5 +1,9 @@
 # Progress
 
+## After 1.1.0
+
+- "Live TV Categories" channel: category folders, then channels, in every client ([ADR 0010](adr/0010-live-categories-as-a-jellyfin-channel.md)).
+
 ## Phase 7 - Release (done, v1.0.0 released)
 
 - `codeql.yml` for C# and JavaScript, `integration.yml` with Jellyfin and UI jobs and logs on failure.

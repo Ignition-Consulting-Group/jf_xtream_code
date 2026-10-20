@@ -77,6 +77,30 @@ public sealed class LiveTvTests : IClassFixture<JellyfinFixture>, IAsyncLifetime
     }
 
     [Fact]
+    public async Task Categories_AreBrowsableThenPlayable()
+    {
+        await ChannelsAsync();
+        var channel = (await _api.GetAsync($"/Channels?userId={_api.UserId}", Ct))["Items"]!.AsArray()
+            .ShouldHaveSingleItem()!;
+        channel["Name"]!.GetValue<string>().ShouldBe("Live TV Categories");
+        var channelId = channel["Id"]!.GetValue<string>();
+
+        var categories = (await _api.GetAsync($"/Channels/{channelId}/Items?userId={_api.UserId}", Ct))["Items"]!.AsArray();
+        categories.ShouldNotBeEmpty();
+        var folderId = categories[0]!["Id"]!.GetValue<string>();
+
+        var items = (await _api.GetAsync($"/Channels/{channelId}/Items?userId={_api.UserId}&folderId={folderId}", Ct))["Items"]!.AsArray();
+        items.ShouldNotBeEmpty();
+
+        var playback = await _api.PostAsync(
+            $"/Items/{items[0]!["Id"]!.GetValue<string>()}/PlaybackInfo?userId={_api.UserId}",
+            new { DeviceProfile = new { } },
+            Ct);
+        playback["MediaSources"]!.AsArray().ShouldHaveSingleItem()!["Path"]!.GetValue<string>()
+            .ShouldStartWith(JellyfinFixture.FakeProviderUrl + "/live/demo/demo/");
+    }
+
+    [Fact]
     public async Task Channel_OpensAStreamFromTheProvider()
     {
         var channel = (await ChannelsAsync()).First()!["Id"]!.GetValue<string>();
