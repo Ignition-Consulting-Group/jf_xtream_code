@@ -26,7 +26,12 @@ internal sealed class StubHandler : HttpMessageHandler
 
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        Requests.Add(request);
+        // Library sync fetches series info in parallel.
+        lock (Requests)
+        {
+            Requests.Add(request);
+        }
+
         return Task.FromResult(_respond(request));
     }
 }
