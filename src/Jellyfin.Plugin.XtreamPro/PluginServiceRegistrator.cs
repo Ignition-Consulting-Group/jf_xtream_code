@@ -44,6 +44,7 @@ public class PluginServiceRegistrator : IPluginServiceRegistrator
         serviceCollection.AddSingleton<ITunerHost, XtreamTunerHost>();
         serviceCollection.AddSingleton<IListingsProvider, XtreamListingsProvider>();
         serviceCollection.AddHostedService<ListingsRegistration>();
+        serviceCollection.AddHostedService<RefreshOnSave>();
 
         serviceCollection.AddSingleton(sp => new LibrarySync(
             sp.GetRequiredService<IXtreamSettings>(),
