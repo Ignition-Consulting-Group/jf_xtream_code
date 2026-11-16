@@ -4,7 +4,7 @@ COPY global.json Directory.Build.props Directory.Packages.props .editorconfig ./
 COPY tools/FakeXtreamServer/ tools/FakeXtreamServer/
 RUN dotnet publish tools/FakeXtreamServer -c Release -o /app
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
+FROM mcr.microsoft.com/dotnet/aspnet:11.0
 WORKDIR /app
 COPY --from=build /app .
 ENV ASPNETCORE_HTTP_PORTS=8080
